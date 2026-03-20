@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ARS SAP EHR</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d1f3c;--navy2:#1a3560;--navy3:#243f72;
+  --gold:#c9a84c;--gold2:#e8d9a8;--gold3:#faf6ec;
+  --bg:#f0f2f8;--card:#fff;--line:#dde2ec;--lined:#b8c0d0;
+  --text:#0d1f3c;--muted:#6b7a99;--soft:#f8f9fc;
+  --red:#8b1a1a;--green:#1a4a2e;--amber:#6b4400;
+  --r:6px;--rl:12px;
+  --sh:0 2px 12px rgba(13,31,60,.08);
+  --shl:0 6px 28px rgba(13,31,60,.14);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.6;}
+body{padding-bottom:80px;}
+.wrap{max-width:1200px;margin:0 auto;padding:0 22px;}
+.appbar{background:var(--navy);display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:2000;isolation:isolate;box-shadow:0 2px 20px rgba(0,0,0,.3);}
+.brand{display:flex;align-items:center;gap:14px;padding:11px 0;}
+.brand-icon{width:44px;height:44px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.brand h1{font-family:'Playfair Display',serif;font-size:17px;color:#fff;font-weight:700;}
+.brand p{font-size:10px;color:var(--gold2);letter-spacing:.14em;text-transform:uppercase;font-weight:500;margin-top:1px;}
+.appnav{display:flex;gap:2px;}
+.ntab{padding:10px 20px;border:0;background:transparent;color:rgba(255,255,255,.5);font-family:'Inter',sans-serif;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;}
+.ntab:hover{color:#fff;background:rgba(255,255,255,.07);}
+.ntab.on{color:var(--gold);border-bottom-color:var(--gold);background:rgba(201,168,76,.1);}
+.toolbar{background:var(--navy2);padding:6px 12px;display:grid;grid-auto-flow:column;grid-auto-columns:max-content;gap:5px;align-items:center;position:sticky;top:67px;z-index:1000;overflow-x:auto;overflow-y:visible;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.toolbar::-webkit-scrollbar{display:none;}
+btn,button{font-family:'Inter',sans-serif;font-weight:600;font-size:11px;cursor:pointer;border:0;border-radius:var(--r);padding:6px 11px;transition:all .15s;letter-spacing:.02em;white-space:nowrap;}
+button.p{background:var(--gold);color:var(--navy);}button.p:hover{background:#b8963e;}
+button.s{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.2);}button.s:hover{background:rgba(255,255,255,.25);}
+button.g{background:rgba(255,255,255,.07);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.15);}button.g:hover{background:rgba(255,255,255,.15);}
+button.d{background:var(--red);color:#fff;}button.d:hover{background:#6a1010;}
+button.ok{background:var(--green);color:#fff;}button.ok:hover{background:#133820;}
+button.nv{background:var(--navy);color:#fff;border:1px solid var(--navy3);}button.nv:hover{background:var(--navy3);}
+button:disabled{opacity:.4;cursor:not-allowed;}
+.stxt{color:rgba(255,255,255,.5);font-size:10px;margin-left:4px;font-style:italic;white-space:nowrap;flex-shrink:0;}
+.pg{display:none;}.pg.on{display:block;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--rl);padding:24px 28px;margin-bottom:18px;box-shadow:var(--sh);}
+.lhcard{background:var(--navy);border-radius:var(--rl);margin-bottom:18px;box-shadow:var(--shl);overflow:hidden;position:relative;}
+.lhcard::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold));}
+.lhin{padding:30px 36px;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;}
+.lhl h1{font-family:'Playfair Display',serif;font-size:27px;font-weight:800;color:#fff;margin:0 0 5px;}
+.lhsub{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.lhd{font-size:12px;color:rgba(255,255,255,.55);}.lhd span{color:rgba(255,255,255,.85);font-weight:600;}
+.lha{font-size:12px;color:rgba(255,255,255,.4);margin-top:7px;line-height:1.75;}
+.lhr{text-align:right;flex-shrink:0;}
+.lhbadge{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);border-radius:10px;padding:14px 22px;display:inline-block;}
+.lhbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:700;}
+.lhbv{font-size:15px;color:#fff;font-weight:700;margin-top:3px;}
+.lhconf{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:10px;}
+.stitle{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--gold3);padding-bottom:12px;margin-bottom:20px;}
+.stitle h2{margin:0;font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.stitle h2::before{content:'';width:3px;height:14px;background:var(--gold);border-radius:2px;display:inline-block;flex-shrink:0;}
+.stitle small{color:var(--muted);font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;}
+.g{display:grid;gap:16px;}.g2{grid-template-columns:repeat(2,minmax(0,1fr));}.g3{grid-template-columns:repeat(3,minmax(0,1fr));}.g4{grid-template-columns:repeat(4,minmax(0,1fr));}.mt{margin-top:16px;}
+.f label,.f legend{display:block;font-weight:600;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.f input[type=text],.f input[type=date],.f input[type=number],.f textarea,.f select{width:100%;border:1.5px solid var(--lined);border-radius:var(--r);padding:9px 12px;font-size:14px;font-family:'Inter',sans-serif;background:#fff;color:var(--text);transition:border-color .12s,box-shadow .12s;}
+.f input:focus,.f textarea:focus,.f select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(13,31,60,.1);}
+.f textarea{min-height:90px;resize:vertical;line-height:1.5;}
+.f input[readonly]{background:var(--soft);color:var(--muted);}
+fieldset.f{border:1.5px solid var(--line);border-radius:var(--rl);padding:14px 16px;}
+.cg,.rg{display:grid;gap:8px 12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));}
+.cg.c,.rg.c{grid-template-columns:repeat(auto-fit,minmax(100px,1fr));}
+.opt{display:flex;gap:8px;align-items:flex-start;font-size:13px;cursor:pointer;}
+.opt input{margin-top:3px;accent-color:var(--navy);}
+.scorebox{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--rl);padding:22px;}
+.sgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+.si{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:var(--r);padding:16px;}
+.si .sl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold2);}
+.si strong{display:block;font-size:30px;font-weight:800;color:var(--gold);margin:4px 0 2px;}
+.rg2{color:#6fcf8a;font-weight:700;font-size:12px;}.rw{color:#f6c94e;font-weight:700;font-size:12px;}.rb{color:#f4786a;font-weight:700;font-size:12px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th,td{border:1px solid var(--line);padding:9px 12px;vertical-align:top;}
+th{background:var(--navy);color:rgba(255,255,255,.8);font-weight:700;font-size:10px;letter-spacing:.08em;text-transform:uppercase;}
+tr:nth-child(even) td{background:#fafbfd;}
+.it td:first-child{width:36px;text-align:center;font-weight:800;color:var(--navy);}
+.it td:nth-child(3),.it td:nth-child(4){width:60px;text-align:center;}
+.it td:last-child{width:110px;color:var(--muted);font-size:11px;}
+.rprev{white-space:pre-wrap;background:var(--soft);border:1.5px solid var(--line);border-radius:var(--r);padding:24px;min-height:180px;font-size:13.5px;line-height:1.8;font-family:'Inter',sans-serif;}
+.sigpad{border:1.5px solid var(--lined);border-radius:var(--r);background:#fff;width:100%;height:155px;display:block;}
+.subtle{background:var(--gold3);border:1px solid var(--gold2);border-left:3px solid var(--gold);border-radius:var(--r);padding:14px 16px;font-size:13px;line-height:1.7;white-space:pre-wrap;}
+.dvd{display:flex;align-items:center;gap:12px;margin:22px 0 16px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);}
+.dvd::before,.dvd::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--gold2),transparent);}
+.dvd::after{background:linear-gradient(270deg,var(--gold2),transparent);}
+.fnote{font-size:12px;color:var(--muted);line-height:1.6;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);}
+.dashhero{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:var(--rl);padding:30px 36px;margin-bottom:20px;box-shadow:var(--shl);position:relative;overflow:hidden;}
+.dashhero::after{content:'⚕';position:absolute;right:36px;top:50%;transform:translateY(-50%);font-size:88px;opacity:.05;}
+.dashhero h2{font-family:'Playfair Display',serif;font-size:26px;color:#fff;margin-bottom:6px;}
+.dashhero p{color:rgba(255,255,255,.4);font-size:13px;}
+.dstats{display:flex;gap:14px;margin-top:20px;flex-wrap:wrap;}
+.dstat{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:var(--r);padding:14px 22px;flex:1;min-width:110px;}
+.dsl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);}
+.dsv{font-size:28px;font-weight:800;color:#fff;margin-top:3px;}
+.sbar{position:relative;margin-bottom:16px;}
+.sbar input{width:100%;padding:11px 16px 11px 42px;border:1.5px solid var(--lined);border-radius:var(--r);font-family:'Inter',sans-serif;font-size:14px;background:#fff;}
+.sbar input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(13,31,60,.1);}
+.sbar::before{content:'🔍';position:absolute;left:14px;top:50%;transform:translateY(-50%);}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;}
+.ccard{background:#fff;border:1.5px solid var(--line);border-radius:var(--rl);padding:20px;cursor:pointer;transition:all .15s;box-shadow:var(--sh);}
+.ccard:hover{border-color:var(--navy);box-shadow:var(--shl);transform:translateY(-2px);}
+.ccn{font-size:17px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.ccm{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:5px 14px;margin-bottom:12px;}
+.ccr{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.rbadge{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .15s;}
+.rbadge.ini{background:#e8f0fe;color:#1a56c4;border:1px solid #c5d8fc;}.rbadge.ini:hover{background:#1a56c4;color:#fff;}
+.rbadge.fu{background:#e8fef0;color:#1a7a40;border:1px solid #b8f0cc;}.rbadge.fu:hover{background:#1a7a40;color:#fff;}
+.cca{display:flex;gap:6px;}
+.ccbtn{flex:1;padding:7px;font-size:11px;border-radius:var(--r);border:1.5px solid var(--line);background:var(--soft);color:var(--navy);font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
+.ccbtn:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+.ccbtn.del{color:var(--red);}.ccbtn.del:hover{background:var(--red);color:#fff;border-color:var(--red);}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty .ei{font-size:48px;margin-bottom:14px;}
+.empty h3{margin-bottom:6px;font-size:18px;color:var(--navy);}
+.moverlay{display:none;position:fixed;inset:0;background:rgba(13,31,60,.65);z-index:9000;align-items:center;justify-content:center;padding:20px;}
+.moverlay.on{display:flex;}
+.modal{background:#fff;border-radius:var(--rl);max-width:920px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 20px 60px rgba(13,31,60,.35);}
+.mhead{background:var(--navy);padding:20px 28px;display:flex;justify-content:space-between;align-items:flex-start;border-radius:var(--rl) var(--rl) 0 0;position:sticky;top:0;z-index:1;}
+.mhead h3{font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:2px;}
+.mhead .msub{font-size:11px;color:rgba(255,255,255,.45);}
+.mclose{background:rgba(255,255,255,.1);border:none;color:#fff;width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mclose:hover{background:rgba(255,255,255,.2);}
+.mbody{padding:28px;}
+.mtabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:2px solid var(--line);padding-bottom:0;}
+.mtab{padding:8px 18px;border:0;border-radius:var(--r) var(--r) 0 0;font-family:'Inter',sans-serif;font-weight:600;font-size:12px;cursor:pointer;letter-spacing:.04em;text-transform:uppercase;background:transparent;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;position:relative;z-index:10;pointer-events:all;user-select:none;}
+.mtab.on{color:var(--navy);border-bottom-color:var(--gold);background:var(--gold3);}
+.mrep{white-space:pre-wrap;background:var(--soft);border:1px solid var(--line);border-radius:var(--r);padding:22px;font-size:13px;line-height:1.85;font-family:'Inter',sans-serif;max-height:55vh;overflow-y:auto;}
+.mmeta{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px;}
+.mi{background:var(--soft);border-radius:var(--r);padding:12px 16px;}
+.mil{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.miv{font-size:14px;font-weight:600;color:var(--navy);margin-top:3px;}
+.mtc{display:none;}.mtc.on{display:block;}
+.inl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.hp{display:block;}.pn{display:none;}.pb{page-break-before:always;break-before:page;}
+@media(max-width:860px){.g2,.g3,.g4,.sgrid,.mmeta{grid-template-columns:1fr;}.appnav .ntab{padding:10px 12px;font-size:10px;}}
+@media print{
+  @page{size:letter;margin:.5in;}
+  body{background:#fff;padding:0;font-size:12px;}
+  .appbar,.toolbar,.hp,#dashPg,#fupPg{display:none!important;}
+  .card{box-shadow:none;border-radius:0;border:1px solid #ccc;margin-bottom:12px;padding:14px;}
+  .lhcard{background:#0d1f3c!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .scorebox{background:#0d1f3c!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .pn{display:block;}
+}
+</style>
+</head>
+<body>
+
+<div class="appbar">
+  <div class="brand">
+    <div class="brand-icon">⚕</div>
+    <div>
+      <h1>Addiction Recovery Solutions, PLLC</h1>
+      <p>SAP Electronic Health Record · 903.445.8953</p>
+    </div>
+  </div>
+  <nav class="appnav">
+    <button class="ntab on" id="tabIni" onclick="showPg('ini')">Initial Evaluation</button>
+    <button class="ntab" id="tabFup" onclick="showPg('fup')">Follow-Up Evaluation</button>
+    <button class="ntab" id="tabDash" onclick="showPg('dash')">Client Records</button>
+  </nav>
+</div>
+
+<!-- ═══════ INITIAL EVAL ═══════ -->
+<div id="iniPg" class="pg on">
+  <div class="toolbar hp">
+    <div style="display:inline-flex;flex-wrap:nowrap;gap:5px;align-items:center;width:max-content">
+      <button class="s" onclick="buildRpt()">📄 Build Report</button>
+      <button class="g" onclick="saveD()">💾 Save Draft</button>
+      <button class="g" onclick="loadD()">📂 Load Draft</button>
+      <button class="d" onclick="clearIni()">🗑 Clear</button>
+      <button class="g" onclick="window.print()">🖨 Print</button>
+      <button class="ok" id="shBtn" onclick="saveSheets()">☁ Save to Sheets</button>
+      <span class="stxt" id="sst">Ready.</span>
+    </div>
+  </div>
+  <div class="wrap" style="padding-top:20px">
+  <form id="iniForm">
+
+    <div class="lhcard">
+      <div class="lhin">
+        <div class="lhl">
+          <div class="lhsub">Substance Abuse Professional · Initial SAP Evaluation</div>
+          <h1>Addiction Recovery Solutions, PLLC</h1>
+          <div class="lhd"><span>Joshua Pair</span>, M.Ed., LCDC, SAP · DOT-Qualified SAP · 49 CFR Part 40</div>
+          <div class="lha">410 Rocket St. · Longview, TX 75603 · 903.445.8953</div>
+        </div>
+        <div class="lhr">
+          <div class="lhbadge"><div class="lhbl">Document Type</div><div class="lhbv">Initial SAP Evaluation</div></div>
+          <div class="lhconf">Confidential</div>
+          <p class="pn" style="font-size:11px;color:rgba(255,255,255,.4);margin-top:8px;">Print → Save as PDF</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Client &amp; Referral Information</h2><small>Header</small></div>
+      <div class="g g4">
+        <div class="f"><label>Client Name</label><input name="clientName" type="text"></div>
+        <div class="f"><label>Evaluation Date</label><input name="evalDate" type="date"></div>
+        <div class="f"><label>SSN</label><input name="ssn" type="text"></div>
+        <div class="f"><label>Date of Birth</label><input name="dob" type="date"></div>
+      </div>
+      <div class="g g3 mt">
+        <fieldset class="f"><legend>Signed Paperwork</legend>
+          <div class="cg c">
+            <label class="opt"><input type="checkbox" name="docsSigned" value="Statement of Understanding"> Statement of Understanding</label>
+            <label class="opt"><input type="checkbox" name="docsSigned" value="Consent/ROI"> Consent / ROI</label>
+            <label class="opt"><input type="checkbox" name="docsSigned" value="Other"> Other</label>
+          </div>
+        </fieldset>
+        <div class="f"><label>Other Paperwork Details</label><input name="docsOther" type="text"></div>
+        <div class="f"><label>Case / Reference #</label><input name="caseNumber" type="text"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Assessment Reason / Test / Industry</h2><small>Core Logic</small></div>
+      <div class="g g2">
+        <fieldset class="f"><legend>Reason for Assessment</legend>
+          <div class="rg">
+            <label class="opt"><input type="radio" name="reason" value="Positive Test" onchange="buildRpt()"> Positive Test</label>
+            <label class="opt"><input type="radio" name="reason" value="Self Referral" onchange="buildRpt()"> Self Referral</label>
+            <label class="opt"><input type="radio" name="reason" value="DWI/DUI" onchange="buildRpt()"> DWI/DUI</label>
+            <label class="opt"><input type="radio" name="reason" value="Random Selection" onchange="buildRpt()"> Random Selection</label>
+            <label class="opt"><input type="radio" name="reason" value="Reasonable Suspicion" onchange="buildRpt()"> Reasonable Suspicion</label>
+            <label class="opt"><input type="radio" name="reason" value="Follow Up" onchange="buildRpt()"> Follow Up</label>
+            <label class="opt"><input type="radio" name="reason" value="Post Accident" onchange="buildRpt()"> Post Accident</label>
+            <label class="opt"><input type="radio" name="reason" value="Return to Duty" onchange="buildRpt()"> Return to Duty</label>
+            <label class="opt"><input type="radio" name="reason" value="Pre-employment" onchange="buildRpt()"> Pre-employment</label>
+            <label class="opt"><input type="radio" name="reason" value="Not Applicable" onchange="buildRpt()"> Not Applicable</label>
+          </div>
+        </fieldset>
+        <div class="g g2">
+          <div class="f"><label>Violation Date</label><input name="positiveTestDate" type="date" oninput="buildRpt()"></div>
+          <div class="f"><label>Type of Test</label><input name="typeOfTest" type="text" placeholder="Urine, BAT, Oral Fluid…" oninput="buildRpt()"></div>
+          <div class="f"><label>Reason Details</label><input name="reasonNotes" type="text" oninput="buildRpt()"></div>
+          <div class="f"><label>Current Employer / Entity</label><input name="employer" type="text" oninput="buildRpt()"></div>
+        </div>
+      </div>
+      <div class="g g2 mt">
+        <fieldset class="f"><legend>Industry Type</legend>
+          <div class="rg">
+            <label class="opt"><input type="radio" name="industry" value="FMCSA" onchange="buildRpt()"> FMCSA</label>
+            <label class="opt"><input type="radio" name="industry" value="FAA" onchange="buildRpt()"> FAA</label>
+            <label class="opt"><input type="radio" name="industry" value="FRA" onchange="buildRpt()"> FRA</label>
+            <label class="opt"><input type="radio" name="industry" value="FTA" onchange="buildRpt()"> FTA</label>
+            <label class="opt"><input type="radio" name="industry" value="USCG" onchange="buildRpt()"> USCG</label>
+            <label class="opt"><input type="radio" name="industry" value="PHMSA" onchange="buildRpt()"> PHMSA</label>
+            <label class="opt"><input type="radio" name="industry" value="Non-Transportation" onchange="buildRpt()"> Non-Transportation</label>
+            <label class="opt"><input type="radio" name="industry" value="Other" onchange="buildRpt()"> Other Position</label>
+          </div>
+        </fieldset>
+        <div class="f"><label>Other Position / Industry</label><input name="otherPosition" type="text" oninput="buildRpt()"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Employer / Report Information</h2><small>Required for Report Generation</small></div>
+      <div class="g g3">
+        <fieldset class="f"><legend>Report Type</legend>
+          <div class="rg c">
+            <label class="opt"><input type="radio" name="reportType" value="DOT Employer" checked onchange="buildRpt()"> DOT Employer</label>
+            <label class="opt"><input type="radio" name="reportType" value="Non-DOT Employer" onchange="buildRpt()"> Non-DOT Employer</label>
+            <label class="opt"><input type="radio" name="reportType" value="Self Referral" onchange="buildRpt()"> Self Referral</label>
+            <label class="opt"><input type="radio" name="reportType" value="DISA" onchange="buildRpt()"> DISA</label>
+          </div>
+        </fieldset>
+        <fieldset class="f"><legend>Closing Certification</legend>
+          <div class="rg c">
+            <label class="opt"><input type="radio" name="closingCert" value="DOT SAP" checked onchange="buildRpt()"> DOT SAP</label>
+            <label class="opt"><input type="radio" name="closingCert" value="Independent Provider" onchange="buildRpt()"> Independent Provider</label>
+            <label class="opt"><input type="radio" name="closingCert" value="No Certification" onchange="buildRpt()"> No Certification</label>
+          </div>
+        </fieldset>
+        <fieldset class="f"><legend>Return Language</legend>
+          <div class="rg c">
+            <label class="opt"><input type="radio" name="returnLanguage" value="Safety Sensitive" checked onchange="buildRpt()"> Safety Sensitive</label>
+            <label class="opt"><input type="radio" name="returnLanguage" value="Return to Duty" onchange="buildRpt()"> Return to Duty</label>
+            <label class="opt"><input type="radio" name="returnLanguage" value="No Return Language" onchange="buildRpt()"> No Return Language</label>
+          </div>
+        </fieldset>
+      </div>
+      <div class="g g3 mt">
+        <div class="f"><label>DER / Employer Contact Name</label><input name="derName" type="text" oninput="buildRpt()"></div>
+        <div class="f"><label>DER Contact Email / Fax / Phone</label><input name="derContact" type="text" oninput="buildRpt()"></div>
+        <div class="f"><label>Company Name</label><input name="companyName" type="text" oninput="buildRpt()"></div>
+      </div>
+      <div class="g g2 mt">
+        <div class="f"><label>Company Address</label><textarea name="companyAddress" oninput="buildRpt()" placeholder="Street, City, State ZIP"></textarea></div>
+        <div class="g g2">
+          <div class="f"><label>Violation Date</label><input name="violationDate" type="date" oninput="buildRpt()"></div>
+          <div class="f"><label>Violation / Referral Description</label><input name="violationLabel" type="text" oninput="buildRpt()" placeholder="Positive random urine drug screen…"></div>
+          <div class="f"><label>Recipient Header</label><input name="recipientHeader" type="text" oninput="buildRpt()" placeholder="DISA Global Solutions, Inc."></div>
+          <div class="f"><label>Recipient Attention Line</label><input name="recipientAttention" type="text" oninput="buildRpt()" placeholder="Attn: Return to Duty Department"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Identified Problem &amp; Relevant Circumstances</h2><small>Substances &amp; History</small></div>
+      <fieldset class="f"><legend>Description of Identified Problem – check all that apply</legend>
+        <div class="cg">
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Alcohol" onchange="buildRpt()"> Alcohol</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Opiates" onchange="buildRpt()"> Opiates</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Ketamine" onchange="buildRpt()"> Ketamine</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Tranquilizers" onchange="buildRpt()"> Tranquilizers</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Amphetamines" onchange="buildRpt()"> Amphetamines</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="PCP" onchange="buildRpt()"> PCP</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="GHB" onchange="buildRpt()"> GHB</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Hallucinogens" onchange="buildRpt()"> Hallucinogens</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Cocaine" onchange="buildRpt()"> Cocaine</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Inhalants" onchange="buildRpt()"> Inhalants</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Prescription Drugs" onchange="buildRpt()"> Prescription Drugs</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Cannabis" onchange="buildRpt()"> Cannabis</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Ecstasy" onchange="buildRpt()"> Ecstasy</label>
+          <label class="opt"><input type="checkbox" name="identifiedProblem" value="Other" onchange="buildRpt()"> Other</label>
+        </div>
+      </fieldset>
+      <div class="g g3 mt">
+        <div class="f"><label>Alcohol – Qty / $ Spent</label><input name="alcoholQty" type="text"></div>
+        <div class="f"><label>Alcohol – First Use</label><input name="alcoholFirstUse" type="text"></div>
+        <div class="f"><label>Alcohol – Last Use / Frequency</label><input name="alcoholLastFrequency" type="text"></div>
+        <div class="f"><label>Drug 1 – Name</label><input name="drug1Name" type="text"></div>
+        <div class="f"><label>Drug 1 – Qty / $ Spent</label><input name="drug1Qty" type="text"></div>
+        <div class="f"><label>Drug 1 – First / Last / Frequency</label><input name="drug1Details" type="text"></div>
+        <div class="f"><label>Drug 2 – Name</label><input name="drug2Name" type="text"></div>
+        <div class="f"><label>Drug 2 – Qty / $ Spent</label><input name="drug2Qty" type="text"></div>
+        <div class="f"><label>Drug 2 – First / Last / Frequency</label><input name="drug2Details" type="text"></div>
+      </div>
+      <div class="g g2 mt">
+        <div class="f"><label>History of Positive Tests</label><textarea name="historyPositiveTests"></textarea></div>
+        <div class="f"><label>History of DWI / DUI</label><textarea name="historyDwi"></textarea></div>
+        <fieldset class="f"><legend>Previous Substance Abuse Treatment</legend>
+          <div class="rg c">
+            <label class="opt"><input type="radio" name="previousTreatment" value="Yes"> Yes</label>
+            <label class="opt"><input type="radio" name="previousTreatment" value="No"> No</label>
+          </div>
+          <div class="f" style="margin-top:10px"><label>Explain if Yes</label><textarea name="previousTreatmentExplain"></textarea></div>
+        </fieldset>
+        <div class="f"><label>History &amp; Background of the Problem</label><textarea name="problemHistory"></textarea></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Mental Status / Diagnosis / Instruments</h2><small>Clinical Section</small></div>
+      <div class="g g3">
+        <fieldset class="f"><legend>Intoxicated at Evaluation</legend>
+          <div class="rg c">
+            <label class="opt"><input type="radio" name="intoxicated" value="Yes"> Yes</label>
+            <label class="opt"><input type="radio" name="intoxicated" value="No"> No</label>
+          </div>
+        </fieldset>
+        <div class="f"><label>Orientation (x3)</label><input name="orientation" type="text"></div>
+        <div class="f"><label>Physical Presentation / Behavior / Affect</label><input name="physicalPresentation" type="text"></div>
+      </div>
+      <div class="f mt"><label>Presentation Comments</label><textarea name="presentationComments"></textarea></div>
+      <div class="g g3 mt">
+        <fieldset class="f"><legend>Client Acknowledges a Problem</legend>
+          <div class="rg c"><label class="opt"><input type="radio" name="ackProblem" value="Yes"> Yes</label><label class="opt"><input type="radio" name="ackProblem" value="No"> No</label></div>
+        </fieldset>
+        <fieldset class="f"><legend>Factors of Denial Evident</legend>
+          <div class="rg c"><label class="opt"><input type="radio" name="denial" value="Yes"> Yes</label><label class="opt"><input type="radio" name="denial" value="No"> No</label></div>
+        </fieldset>
+        <div class="f"><label>Denial Comments</label><textarea name="denialComments"></textarea></div>
+      </div>
+      <div class="scorebox mt">
+        <div class="stitle" style="margin-bottom:16px;border-bottom-color:rgba(255,255,255,.1)">
+          <h2 style="color:rgba(255,255,255,.9)">Instrument Scores</h2><small style="color:rgba(255,255,255,.4)">Auto-Calculated</small>
+        </div>
+        <div class="sgrid">
+          <div class="si"><div class="sl">MAST Score</div><strong id="mastSc">0</strong><div id="mastIn" style="color:rgba(255,255,255,.4);font-size:12px">Not calculated</div></div>
+          <div class="si"><div class="sl">DAST-10 Score</div><strong id="dastSc">0</strong><div id="dastIn" style="color:rgba(255,255,255,.4);font-size:12px">Not calculated</div></div>
+          <div class="si"><div class="sl">Combined Flag</div><strong id="combF" style="font-size:18px;margin-top:8px">—</strong><div id="combI" style="color:rgba(255,255,255,.4);font-size:11px;margin-top:4px">Clinical judgment</div></div>
+          <div class="si"><div class="sl">Status</div><strong id="scSt" style="font-size:16px;margin-top:8px">Ready</strong><div style="color:rgba(255,255,255,.4);font-size:11px;margin-top:4px">In report</div></div>
+        </div>
+        <div class="g g2 mt">
+          <div class="f"><label style="color:rgba(255,255,255,.5)">Instrument Score Summary</label><input name="instrumentSummary" type="text" readonly></div>
+          <div class="f"><label style="color:rgba(255,255,255,.5)">Instrument Comments</label><textarea name="instrumentComments"></textarea></div>
+        </div>
+      </div>
+      <div class="g g2 mt">
+        <div class="f"><label>Diagnosis Comments</label><textarea name="diagnosisComments"></textarea></div>
+        <div class="f"><label>Current Prescribed Medications</label><textarea name="currentMeds"></textarea></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Other Addictions &amp; Impairments</h2><small>Check All That Apply</small></div>
+      <fieldset class="f"><legend>Other Addictions (if relevant to current problem)</legend>
+        <div class="cg">
+          <label class="opt"><input type="checkbox" name="otherAddictions" value="Nicotine"> Nicotine</label>
+          <label class="opt"><input type="checkbox" name="otherAddictions" value="Spending"> Spending</label>
+          <label class="opt"><input type="checkbox" name="otherAddictions" value="Gambling"> Gambling</label>
+          <label class="opt"><input type="checkbox" name="otherAddictions" value="Sexual Behaviors"> Sexual Behaviors</label>
+          <label class="opt"><input type="checkbox" name="otherAddictions" value="Eating"> Eating</label>
+          <label class="opt"><input type="checkbox" name="otherAddictions" value="Other"> Other</label>
+        </div>
+      </fieldset>
+      <div class="f mt"><label>Other Addictions Comments</label><textarea name="otherAddictionsComments"></textarea></div>
+      <div class="stitle mt"><h2>Impairments</h2><small>Check All That Apply</small></div>
+      <fieldset class="f"><legend>Check all that apply</legend>
+        <div class="cg">
+          <label class="opt"><input type="checkbox" name="impairments" value="Onset Insomnia"> Onset Insomnia</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Terminal Insomnia"> Terminal Insomnia</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Global Insomnia"> Global Insomnia</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Appetite"> Appetite</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Speech"> Speech</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Mood"> Mood</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Vision"> Vision</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Weight Changes"> Weight Changes</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Energy"> Energy</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Memory"> Memory</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Concentration"> Concentration</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Headaches"> Headaches</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Changes in Gait"> Changes in Gait</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Tremors"> Tremors</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Perception"> Perception</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Thought Process"> Thought Process</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Thought Content"> Thought Content</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Loss of Balance"> Loss of Balance</label>
+          <label class="opt"><input type="checkbox" name="impairments" value="Hallucinations"> Hallucinations</label>
+        </div>
+      </fieldset>
+      <div class="f mt"><label>Impairments Comments</label><textarea name="impairmentsComments"></textarea></div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>DSM-V Diagnosis</h2><small>Substance Use Disorders — Check All That Apply</small></div>
+      <div class="g g3">
+        <fieldset class="f"><legend>Alcohol Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F10.10 Alcohol Use – Mild"> F10.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F10.20 Alcohol Use – Moderate"> F10.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F10.20 Alcohol Use – Severe"> F10.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>Cannabis Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F12.10 Cannabis Use – Mild"> F12.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F12.20 Cannabis Use – Moderate"> F12.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F12.20 Cannabis Use – Severe"> F12.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>Opiate Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F11.10 Opiate Use – Mild"> F11.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F11.20 Opiate Use – Moderate"> F11.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F11.20 Opiate Use – Severe"> F11.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>Cocaine Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F14.10 Cocaine Use – Mild"> F14.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F14.20 Cocaine Use – Moderate"> F14.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F14.20 Cocaine Use – Severe"> F14.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>Amphetamine-type Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F15.10 Amphetamine-type – Mild"> F15.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F15.20 Amphetamine-type – Moderate"> F15.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F15.20 Amphetamine-type – Severe"> F15.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>Sedative/Hypnotic Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F13.10 Sedative/Hypnotic – Mild"> F13.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F13.20 Sedative/Hypnotic – Moderate"> F13.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F13.20 Sedative/Hypnotic – Severe"> F13.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>Phencyclidine Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F16.10 Phencyclidine – Mild"> F16.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F16.20 Phencyclidine – Moderate"> F16.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F16.20 Phencyclidine – Severe"> F16.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>Hallucinogen Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F16.10 Hallucinogen – Mild"> F16.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F16.20 Hallucinogen – Moderate"> F16.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F16.20 Hallucinogen – Severe"> F16.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>Inhalant Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F18.10 Inhalant – Mild"> F18.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F18.20 Inhalant – Moderate"> F18.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F18.20 Inhalant – Severe"> F18.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>Other Stimulant Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F15.10 Other Stimulant – Mild"> F15.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F15.20 Other Stimulant – Moderate"> F15.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F15.20 Other Stimulant – Severe"> F15.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>Other Substance Use Disorder</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F19.10 Other Substance – Mild"> F19.10 Mild</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F19.20 Other Substance – Moderate"> F19.20 Moderate</label>
+          <label class="opt"><input type="checkbox" name="dsmDx" value="F19.20 Other Substance – Severe"> F19.20 Severe</label>
+        </div></fieldset>
+        <fieldset class="f"><legend>No Diagnosis</legend><div class="rg c">
+          <label class="opt"><input type="checkbox" name="dsmDx" value="R69 No Diagnosis"> R69 No Diagnosis</label>
+        </div></fieldset>
+      </div>
+      <div class="f mt"><label>Diagnosis Comments</label><textarea name="dsmComments"></textarea></div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Suicidal / Homicidal Ideation</h2><small>Safety Assessment</small></div>
+      <div class="g g2">
+        <fieldset class="f"><legend>Suicidal Ideation</legend>
+          <div class="rg c">
+            <label class="opt"><input type="radio" name="suicidalIdeation" value="No"> No</label>
+            <label class="opt"><input type="radio" name="suicidalIdeation" value="Yes"> Yes</label>
+            <label class="opt"><input type="checkbox" name="siFactors" value="Plans"> Plans</label>
+            <label class="opt"><input type="checkbox" name="siFactors" value="Means"> Means</label>
+            <label class="opt"><input type="checkbox" name="siFactors" value="History"> History</label>
+          </div>
+        </fieldset>
+        <fieldset class="f"><legend>Homicidal Ideation</legend>
+          <div class="rg c">
+            <label class="opt"><input type="radio" name="homicidalIdeation" value="No"> No</label>
+            <label class="opt"><input type="radio" name="homicidalIdeation" value="Yes"> Yes</label>
+            <label class="opt"><input type="checkbox" name="hiFactors" value="Plans"> Plans</label>
+            <label class="opt"><input type="checkbox" name="hiFactors" value="Means"> Means</label>
+            <label class="opt"><input type="checkbox" name="hiFactors" value="History"> History</label>
+          </div>
+        </fieldset>
+      </div>
+      <div class="g g2 mt">
+        <div class="f"><label>Suicidal Ideation Explanation</label><textarea name="siExplanation"></textarea></div>
+        <div class="f"><label>Homicidal Ideation — Name / Address / Phone of Intended Victim (if applicable)</label><textarea name="hiExplanation"></textarea></div>
+      </div>
+      <div class="g g2 mt">
+        <div class="f"><label>Action Taken by SAP (if yes to either)</label><textarea name="siHiAction"></textarea></div>
+        <div class="f"><label>Relevant Psychiatric Treatment History</label><textarea name="psychiatricTreatmentHistory"></textarea></div>
+      </div>
+      <div class="g g2 mt">
+        <div class="f"><label>Relevant Psychiatric Medication History</label><textarea name="psychiatricMedHistory"></textarea></div>
+        <div class="f"><label>Relevant Counseling History</label><textarea name="counselingHistory"></textarea></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Additional Clinical Information</h2><small>Medical, Legal, Financial, Social</small></div>
+      <div class="g g2">
+        <div class="f"><label>Medical / Health Problems History</label>
+          <div class="rg c" style="margin-bottom:8px"><label class="opt"><input type="radio" name="medicalProblems" value="No"> No</label><label class="opt"><input type="radio" name="medicalProblems" value="Yes"> Yes — explain below</label></div>
+          <textarea name="medicalProblemsDetail" placeholder="If yes, explain. Include medications and doctor name/phone."></textarea>
+        </div>
+        <div class="f"><label>Legal Problems</label>
+          <div class="rg c" style="margin-bottom:8px"><label class="opt"><input type="radio" name="legalProblems" value="No"> No</label><label class="opt"><input type="radio" name="legalProblems" value="Yes"> Yes — explain below</label></div>
+          <textarea name="legalProblemsDetail" placeholder="If yes, explain. Include court date."></textarea>
+        </div>
+        <div class="f"><label>Financial Problems</label>
+          <div class="rg c" style="margin-bottom:8px"><label class="opt"><input type="radio" name="financialProblems" value="No"> No</label><label class="opt"><input type="radio" name="financialProblems" value="Yes"> Yes — explain below</label></div>
+          <textarea name="financialProblemsDetail" placeholder="If yes, explain."></textarea>
+        </div>
+        <div class="f"><label>Work Related Issues</label>
+          <div class="rg c" style="margin-bottom:8px"><label class="opt"><input type="radio" name="workIssues" value="No"> No</label><label class="opt"><input type="radio" name="workIssues" value="Yes"> Yes — explain below</label></div>
+          <textarea name="workIssuesDetail" placeholder="If yes, explain."></textarea>
+        </div>
+        <div class="f"><label>Significant Losses (last 12 months)</label>
+          <div class="rg c" style="margin-bottom:8px"><label class="opt"><input type="radio" name="significantLosses" value="No"> No</label><label class="opt"><input type="radio" name="significantLosses" value="Yes"> Yes — explain below</label></div>
+          <textarea name="significantLossesDetail" placeholder="If yes, explain."></textarea>
+        </div>
+        <div class="f"><label>Support System Currently in Place</label><textarea name="supportSystem" placeholder="What kind of support system is currently in place for the client?"></textarea></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>MAST</h2><small>Auto-Scored</small></div>
+      <table class="it"><thead><tr><th>#</th><th>Question</th><th>Yes</th><th>No</th><th>Weight</th></tr></thead>
+      <tbody id="mastTbl"></tbody></table>
+    </div>
+
+    <div class="card pb">
+      <div class="stitle"><h2>DAST-10</h2><small>Auto-Scored</small></div>
+      <table class="it"><thead><tr><th>#</th><th>Question</th><th>Yes</th><th>No</th><th>Score Rule</th></tr></thead>
+      <tbody id="dastTbl"></tbody></table>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Recommendations</h2><small>Controls Final Report</small></div>
+      <div class="dvd">Recommendation Counts</div>
+      <div class="g g4">
+        <div class="f"><label>Education Hours</label><input name="educationHours" type="number" min="0" value="0" oninput="syncRec();buildRpt()"></div>
+        <div class="f"><label>Peer Support Groups</label><input name="peerGroupCount" type="number" min="0" value="0" oninput="syncRec();buildRpt()"></div>
+        <div class="f"><label>Counseling Sessions</label><input name="counselingSessions" type="number" min="0" value="0" oninput="syncRec();buildRpt()"></div>
+        <div class="f"><label>Negative Screen Required</label>
+          <select name="negativeScreenRequired" onchange="syncRec();buildRpt()">
+            <option value="Yes" selected>Yes</option><option value="No">No</option>
+          </select>
+        </div>
+      </div>
+      <div class="dvd">Structured Recommendations</div>
+      <div class="g g3">
+        <div class="f"><label>Education Detail</label><textarea name="educationDetail" oninput="syncRec();buildRpt()" placeholder="8-hour online drug and alcohol education"></textarea></div>
+        <div class="f"><label>Peer Support Detail</label><textarea name="peerDetail" oninput="syncRec();buildRpt()" placeholder="AA, NA, SMART, In The Rooms…"></textarea></div>
+        <div class="f"><label>Counseling / Treatment Detail</label><textarea name="treatmentDetail" oninput="syncRec();buildRpt()" placeholder="Individual counseling, outpatient, IOP…"></textarea></div>
+      </div>
+      <div class="dvd">Treatment Level</div>
+      <div class="g g3">
+        <fieldset class="f"><legend>Treatment Recommendation</legend>
+          <div class="rg c">
+            <label class="opt"><input type="radio" name="treatmentLevel" value="none" checked onchange="buildRpt()"> None</label>
+            <label class="opt"><input type="radio" name="treatmentLevel" value="iop" onchange="buildRpt()"> IOP</label>
+            <label class="opt"><input type="radio" name="treatmentLevel" value="residential" onchange="buildRpt()"> Residential</label>
+            <label class="opt"><input type="radio" name="treatmentLevel" value="custom" onchange="buildRpt()"> Custom</label>
+          </div>
+        </fieldset>
+        <div class="f"><label>Treatment Provider Link / Name</label><input name="treatmentLink" type="text" oninput="buildRpt()" placeholder="https://provider.com or Provider Name, City TX"></div>
+        <div class="f"><label>Treatment Detail / Notes</label><input name="treatmentLevelDetail" type="text" oninput="buildRpt()" placeholder="e.g. 3x per week for 8 weeks"></div>
+      </div>
+      <div class="g g2 mt">
+        <div class="f"><label>Recommendation Summary</label><textarea name="sapRecommendation" placeholder="Auto-built but editable"></textarea></div>
+        <div class="f"><label>Additional Report Note</label><textarea name="dotReportNote" placeholder="No diagnosis or protected medical history in employer-facing reports."></textarea></div>
+      </div>
+      <div class="subtle mt" id="recSum">No recommendations entered yet.</div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Report Preview</h2><small>Editable — changes save with ☁ Save to Sheets</small></div>
+      <div class="inl hp" style="margin-bottom:14px;gap:8px">
+        <button type="button" class="p" onclick="buildRpt(true)">↺ Regenerate Report</button>
+        <span style="font-size:11px;color:var(--muted);font-style:italic">You can type directly in the report below to edit it before saving.</span>
+      </div>
+      <div id="rptPrev" class="rprev" contenteditable="true" style="min-height:300px;outline:none" oninput="markRptEdited()"></div>
+      <div id="rptEditedBadge" style="display:none;margin-top:8px;font-size:11px;color:#6b4400;font-weight:600">✏ Report manually edited — click ☁ Save to Sheets to save changes.</div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Signature Block</h2><small>Appears in Print / PDF</small></div>
+      <div class="g g3">
+        <div class="f"><label>SAP Full Name</label><input name="sapName" type="text" placeholder="Joshua Pair" oninput="buildRpt()"></div>
+        <div class="f"><label>SAP Credentials</label><input name="sapCredentials" type="text" placeholder="M.Ed., LCDC, SAP" oninput="buildRpt()"></div>
+        <div class="f"><label>Signature Date</label><input name="sapSigDate" type="date" oninput="buildRpt()"></div>
+      </div>
+      <div style="margin-top:14px">
+        <label style="font-weight:700;font-size:13px;display:block;margin-bottom:8px">Substance Abuse Professional Signature</label>
+        <canvas id="sigIni" class="sigpad"></canvas>
+        <div class="hp" style="display:flex;gap:8px;margin-top:8px">
+          <button type="button" class="g" style="background:var(--soft);color:var(--navy);border:1.5px solid var(--lined)" onclick="clearPad('sigIni')">Clear Signature</button>
+        </div>
+      </div>
+      <div class="fnote">Employer-facing reports should stay limited to evaluation and recommendation language. Do not include diagnosis, detailed medical history, or protected health information unless separately authorized.</div>
+    </div>
+
+  </form>
+  </div>
+</div>
+
+<!-- ═══════ FOLLOW-UP EVAL ═══════ -->
+<div id="fupPg" class="pg">
+  <div class="toolbar hp">
+    <div style="display:inline-flex;flex-wrap:nowrap;gap:5px;align-items:center;width:max-content">
+      <button class="p" onclick="buildFU()">📄 Build All Reports</button>
+      <button class="g" onclick="saveFUD()">💾 Save Draft</button>
+      <button class="g" onclick="loadFUD()">📂 Load Draft</button>
+      <button class="d" onclick="clearFU()">🗑 Clear</button>
+      <button class="g" onclick="window.print()">🖨 Print</button>
+      <button class="ok" id="fuBtn" onclick="saveFUSheets()">☁ Save to Sheets</button>
+      <span class="stxt" id="fust">Ready.</span>
+    </div>
+  </div>
+  <div class="wrap" style="padding-top:20px">
+  <form id="fupForm">
+
+    <div class="lhcard">
+      <div class="lhin">
+        <div class="lhl">
+          <div class="lhsub">Substance Abuse Professional · Follow-Up Evaluation</div>
+          <h1>Addiction Recovery Solutions, PLLC</h1>
+          <div class="lhd"><span>Joshua Pair</span>, M.Ed., LCDC, SAP · DOT-Qualified SAP · 49 CFR Part 40</div>
+          <div class="lha">410 Rocket St. · Longview, TX 75603 · 903.445.8953</div>
+        </div>
+        <div class="lhr">
+          <div class="lhbadge"><div class="lhbl">Document Type</div><div class="lhbv">Follow-Up Evaluation</div></div>
+          <div class="lhconf">Confidential</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Client Information</h2><small>Follow-Up Header</small></div>
+      <div class="g g4">
+        <div class="f"><label>Client Name</label><input name="fuClientName" type="text" oninput="buildFU()"></div>
+        <div class="f"><label>Follow-Up Date</label><input name="fuDate" type="date" oninput="buildFU()"></div>
+        <div class="f"><label>SSN</label><input name="fuSsn" type="text" oninput="buildFU()"></div>
+        <div class="f"><label>Case / Reference #</label><input name="fuCaseNumber" type="text" oninput="buildFU()"></div>
+      </div>
+      <div class="g g3 mt">
+        <div class="f"><label>Link to Initial Eval (auto-fill)</label>
+          <select name="linkedSapId" id="linkSel" onchange="autoFill()">
+            <option value="">— Select to auto-fill from initial eval —</option>
+          </select>
+        </div>
+        <div class="f"><label>Initial Recommendations Summary</label><input name="initialRecommendations" type="text" placeholder="8hr education, 5 peer groups, 5 counseling sessions, negative screen" oninput="buildFU()"></div>
+        <div class="f"><label>Follow-Up Report Type</label>
+          <select name="fuReportType" onchange="buildFU()">
+            <option value="DOT Employer">DOT Employer</option>
+            <option value="DISA">DISA</option>
+            <option value="Non-DOT Employer">Non-DOT Employer</option>
+            <option value="Self Referral">Self Referral</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Biopsychosocial Assessment Update</h2><small>Clinical Follow-Up Note</small></div>
+      <div class="g g2">
+        <div class="f"><label>Presenting Problem</label>
+          <select onchange="fillBio('presentingProblem',this)" style="margin-bottom:6px">
+            <option value="">— Select a pre-written option or type below —</option>
+            <option value="Client is returning for follow-up evaluation after completing all initial SAP recommendations, including drug and alcohol education, peer support groups, counseling sessions, and submitting a negative drug screen. No other changes were noted in this area since the client's initial evaluation.">Completed all recommendations — no changes</option>
+            <option value="Client is returning for follow-up evaluation after completing education and counseling sessions as recommended. Client reports continued engagement in recovery and has submitted a negative drug screen. No significant changes were noted in this area since the initial evaluation.">Completed education and counseling — engaged in recovery</option>
+            <option value="Client is returning for follow-up evaluation. Client reports completing the required peer support groups and counseling sessions. Client states they have remained substance-free and is prepared to return to safety-sensitive duties. No other changes were noted since the initial evaluation.">Completed groups and counseling — ready to return</option>
+            <option value="Client is returning for a follow-up evaluation after completing all SAP-recommended treatment components. Client reports improved insight into their substance use and demonstrates readiness to comply with return-to-duty requirements. No other changes were noted since the initial evaluation.">Completed all components — improved insight</option>
+          </select>
+          <textarea name="presentingProblem" oninput="buildFU()" placeholder="Or type your own narrative here…"></textarea>
+        </div>
+        <div class="f"><label>Medical Status</label>
+          <select onchange="fillBio('medicalStatus',this)" style="margin-bottom:6px">
+            <option value="">— Select a pre-written option or type below —</option>
+            <option value="Client reports no current substance use. No significant changes in medical status have been reported since the initial evaluation.">No substance use — no medical changes</option>
+            <option value="Client reports no current use of alcohol or controlled substances. Client is currently prescribed medications as reported at the initial evaluation. No new medical concerns were identified at this time.">No substance use — stable prescribed meds</option>
+            <option value="Client reports cessation of substance use following the violation. Client denies any current medical concerns related to substance use. No changes in medical status were noted since the initial evaluation.">Ceased use — no current medical concerns</option>
+            <option value="Client reports no current alcohol or drug use and states their overall health has improved since the initial evaluation. No medical issues related to substance use were reported at this time.">No use — overall health improved</option>
+          </select>
+          <textarea name="medicalStatus" oninput="buildFU()" placeholder="Or type your own narrative here…"></textarea>
+        </div>
+        <div class="f"><label>Employment / Support Status</label>
+          <select onchange="fillBio('employmentStatus',this)" style="margin-bottom:6px">
+            <option value="">— Select a pre-written option or type below —</option>
+            <option value="Client is currently awaiting return to safety-sensitive duty. No other changes in employment or support systems were reported since the initial evaluation.">Awaiting return to safety-sensitive duty</option>
+            <option value="Client reports they have remained employed in a non-safety-sensitive capacity during the evaluation period. Client states their employment situation is stable and they are prepared to resume safety-sensitive duties. No changes in support systems were noted.">Employed non-safety-sensitive — stable</option>
+            <option value="Client reports they are currently unemployed and actively seeking reemployment. Client states they have maintained their support systems and continues to engage in recovery activities. No significant changes in support status were noted since the initial evaluation.">Unemployed — maintaining support systems</option>
+            <option value="Client reports stable employment and strong family and community support systems. No changes in employment or support status were noted since the initial evaluation.">Stable employment and strong support systems</option>
+          </select>
+          <textarea name="employmentStatus" oninput="buildFU()" placeholder="Or type your own narrative here…"></textarea>
+        </div>
+        <div class="f"><label>Alcohol / Other Drugs</label>
+          <select onchange="fillBio('alcoholDrugsUpdate',this)" style="margin-bottom:6px">
+            <option value="">— Select a pre-written option or type below —</option>
+            <option value="Client reports no current use of alcohol or illicit substances. Client states they have maintained abstinence since the initial evaluation and has submitted a negative drug screen confirming this. Client reports finding peer support meetings helpful in reinforcing healthy coping strategies.">Abstinent — negative screen — peer support helpful</option>
+            <option value="Client reports no current use of alcohol or controlled substances. Client states they have remained abstinent since the violation and credits education and counseling with increasing their awareness of the risks associated with substance use.">Abstinent — credits education and counseling</option>
+            <option value="Client denies any current alcohol or drug use. Client reports they were never a regular user and maintains that the violation was an isolated incident. Client has submitted a negative drug screen and reports no cravings or urges to use.">Denies use — isolated incident — negative screen</option>
+            <option value="Client reports no current use of alcohol or illicit substances and states they have actively avoided environments and individuals associated with prior substance use. Client demonstrates awareness of relapse triggers and has identified healthy coping strategies.">No use — avoiding triggers — healthy coping identified</option>
+          </select>
+          <textarea name="alcoholDrugsUpdate" oninput="buildFU()" placeholder="Or type your own narrative here…"></textarea>
+        </div>
+        <div class="f"><label>Legal Status</label>
+          <select onchange="fillBio('legalStatus',this)" style="margin-bottom:6px">
+            <option value="">— Select a pre-written option or type below —</option>
+            <option value="No other changes were noted in this area since the client's initial evaluation. Client reports no new legal issues.">No changes — no new legal issues</option>
+            <option value="Client reports no new legal issues since the initial evaluation. Client states they are in compliance with all legal requirements related to the violation and is not currently involved in any active legal proceedings.">No new issues — compliant with legal requirements</option>
+            <option value="Client reports the legal matter related to the violation is currently pending. No additional legal issues have been reported since the initial evaluation. Client is cooperating with all required legal processes.">Legal matter pending — cooperating</option>
+            <option value="Client reports the legal matter related to the violation has been resolved. No additional legal concerns were identified at this time. No other changes were noted in this area since the initial evaluation.">Legal matter resolved — no additional concerns</option>
+          </select>
+          <textarea name="legalStatus" oninput="buildFU()" placeholder="Or type your own narrative here…"></textarea>
+        </div>
+        <div class="f"><label>Family / Social Relationships</label>
+          <select onchange="fillBio('familySocial',this)" style="margin-bottom:6px">
+            <option value="">— Select a pre-written option or type below —</option>
+            <option value="Client reports an improved ability to cope with family-related stressors. Client acknowledged intentionally distancing themselves from past associates connected to substance use and emphasized the benefit of surrounding themselves with positive influences.">Improved coping — distancing from negative influences</option>
+            <option value="Client reports stable family and social relationships. Client states their support system has been a positive factor in their recovery and that family members have expressed encouragement regarding their progress. No significant changes were noted in this area since the initial evaluation.">Stable relationships — family supportive of recovery</option>
+            <option value="Client reports some ongoing family stress related to the violation; however, client states the situation is improving. Client has identified supportive individuals in their social network and is actively working to repair affected relationships. No significant changes were noted since the initial evaluation.">Ongoing stress — working to repair relationships</option>
+            <option value="Client reports strong family and social support. Client states their relationships have improved since engaging in recovery activities and that their family has noticed positive behavioral changes. No other changes were noted in this area since the initial evaluation.">Strong support — family notices positive changes</option>
+          </select>
+          <textarea name="familySocial" oninput="buildFU()" placeholder="Or type your own narrative here…"></textarea>
+        </div>
+        <div class="f"><label>Psychiatric Status / Threat to Self or Others</label>
+          <select onchange="fillBio('psychiatricStatus',this)" style="margin-bottom:6px">
+            <option value="">— Select a pre-written option or type below —</option>
+            <option value="No indications of psychiatric concerns or threat to self or others were noted at this time. Client presented as calm, cooperative, and oriented.">No concerns — calm, cooperative, oriented</option>
+            <option value="Client denied any current suicidal ideation, homicidal ideation, or psychiatric symptoms. No indications of threat to self or others were identified. Client presented as alert and engaged throughout the evaluation.">No SI/HI — alert and engaged</option>
+            <option value="No psychiatric concerns were identified during this evaluation. Client denied any history of psychiatric hospitalization or treatment since the initial evaluation. No indications of threat to self or others were noted.">No psychiatric concerns — no hospitalization since initial</option>
+            <option value="Client presented without evidence of psychiatric symptoms. Client denied any current mental health concerns or treatment needs beyond those identified at the initial evaluation. No threat to self or others was indicated at this time.">No symptoms — no new mental health concerns</option>
+          </select>
+          <textarea name="psychiatricStatus" oninput="buildFU()" placeholder="Or type your own narrative here…"></textarea>
+        </div>
+        <div class="f"><label>Abilities, Strengths, Needs, and Preferences</label>
+          <select onchange="fillBio('strengthsNeeds',this)" style="margin-bottom:6px">
+            <option value="">— Select a pre-written option or type below —</option>
+            <option value="Client demonstrates increased insight into the importance of peer support and counseling. Client reported learning coping mechanisms through meetings, such as using healthy distractions and engaging in positive activities rather than resorting to substance use. Client appears motivated and better equipped to manage stress without substance reliance.">Increased insight — learned coping — motivated</option>
+            <option value="Client demonstrates a clear understanding of the consequences of substance use and expresses a strong desire to maintain sobriety. Client identified employment and family as primary motivating factors in recovery. Client appears to have the skills and support necessary to sustain long-term abstinence.">Understands consequences — motivated by family/work</option>
+            <option value="Client presents with strong problem-solving skills and a willingness to engage in ongoing recovery support. Client expressed interest in continuing peer support group attendance beyond the minimum requirement. Client demonstrates awareness of personal triggers and has developed a relapse prevention plan.">Strong problem-solving — wants to continue support — relapse plan</option>
+            <option value="Client demonstrates adequate insight into their substance use history and the factors that contributed to the violation. Client has identified a personal support network and expresses commitment to maintaining sobriety. Client appears to have the internal and external resources necessary to successfully return to duty.">Adequate insight — support network — committed to sobriety</option>
+          </select>
+          <textarea name="strengthsNeeds" oninput="buildFU()" placeholder="Or type your own narrative here…"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Compliance &amp; Treatment Completion</h2><small>Follow-Up Report Data</small></div>
+      <div class="g g3">
+        <div class="f"><label>Follow-Up Evaluation Date</label><input name="fuEvalDate" type="date" oninput="buildFU()"></div>
+        <div class="f"><label>Program Participation Date Range</label><input name="programParticipationDates" type="text" placeholder="09/01/2025 – 11/15/2025" oninput="buildFU()"></div>
+        <div class="f"><label>Education Hours Completed</label><input name="eduHours" type="number" min="0" value="0" oninput="buildFU()"></div>
+        <div class="f"><label>Education Provider</label><input name="eduProvider" type="text" placeholder="NCOEI / Risk Prevention Online" oninput="buildFU()"></div>
+        <div class="f"><label>Education Completion Date</label><input name="eduDate" type="date" oninput="buildFU()"></div>
+        <div class="f"><label>Peer Support Groups Attended</label><input name="peerGroups" type="number" min="0" value="0" oninput="buildFU()"></div>
+      </div>
+      <div class="g g3 mt">
+        <div class="f"><label>Peer Group Dates</label><input name="peerGroupDates" type="text" placeholder="09/05, 09/12, 09/19, 09/26, 10/03" oninput="buildFU()"></div>
+        <div class="f"><label>Counseling Sessions Attended</label><input name="fuCounselingSessions" type="number" min="0" value="0" oninput="buildFU()"></div>
+        <div class="f"><label>Counselor Name</label><input name="counselor" type="text" placeholder="Savannah Daniel, LCDC" oninput="buildFU()"></div>
+        <div class="f"><label>Counseling Start Date</label><input name="counselingStart" type="date" oninput="buildFU()"></div>
+        <div class="f"><label>Counseling End Date</label><input name="counselingEnd" type="date" oninput="buildFU()"></div>
+        <div class="f"><label>Collection Location</label><input name="collectionLocation" type="text" placeholder="Concentra, LabCorp…" oninput="buildFU()"></div>
+      </div>
+      <div class="g g3 mt">
+        <div class="f"><label>MRO / Collector &amp; Name</label><input name="mroCollector" type="text" oninput="buildFU()"></div>
+        <div class="f"><label>Drug Test Date (MRO Verification)</label><input name="drugTestDate" type="date" oninput="buildFU()"></div>
+        <div class="f"><label>Test Substance</label>
+          <select name="testSubstance" onchange="buildFU()">
+            <option value="drug">Drug</option>
+            <option value="alcohol">Alcohol</option>
+            <option value="drugs and alcohol">Drugs and Alcohol</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Aftercare &amp; Follow-Up Testing Plan</h2><small>Employer-Facing Documents</small></div>
+      <div class="g g2">
+        <fieldset class="f"><legend>Aftercare Recommendation</legend>
+          <div class="rg c">
+            <label class="opt"><input type="radio" name="aftercareRecommendation" value="none" checked onchange="buildFU()"> No aftercare at this time</label>
+            <label class="opt"><input type="radio" name="aftercareRecommendation" value="iop" onchange="buildFU()"> IOP</label>
+            <label class="opt"><input type="radio" name="aftercareRecommendation" value="meetings" onchange="buildFU()"> Self-Help Meetings</label>
+            <label class="opt"><input type="radio" name="aftercareRecommendation" value="both" onchange="buildFU()"> IOP + Meetings</label>
+            <label class="opt"><input type="radio" name="aftercareRecommendation" value="custom" onchange="buildFU()"> Custom</label>
+          </div>
+        </fieldset>
+        <div class="f"><label>Aftercare Detail</label><textarea name="aftercareDetail" oninput="buildFU()" placeholder="IOP for 3 months and 3 verifiable self help meetings a week for 3 months…"></textarea></div>
+      </div>
+      <div class="g g3 mt">
+        <div class="f"><label>Number of Follow-Up Tests</label><input name="followUpTestCount" type="text" placeholder="6 (First 6 mo: 2/mo; Next 6: 1/mo)" oninput="buildFU()"></div>
+        <div class="f"><label>DER / Employer Name</label><input name="fuDerName" type="text" oninput="buildFU()"></div>
+        <div class="f"><label>Company Name</label><input name="fuCompany" type="text" oninput="buildFU()"></div>
+      </div>
+      <div class="g g2 mt">
+        <div class="f"><label>Company Address</label><textarea name="fuAddress" oninput="buildFU()" placeholder="Street, City, State ZIP"></textarea></div>
+        <div class="g g2">
+          <div class="f"><label>Recipient Header</label><input name="fuRecipientHeader" type="text" placeholder="DISA Global Solutions, Inc." oninput="buildFU()"></div>
+          <div class="f"><label>Recipient Attention</label><input name="fuRecipientAttn" type="text" placeholder="Attn: Return to Duty Department" oninput="buildFU()"></div>
+        </div>
+      </div>
+      <div class="g g3 mt">
+        <fieldset class="f"><legend>Closing Certification</legend>
+          <div class="rg c">
+            <label class="opt"><input type="radio" name="fuClosingCert" value="DOT SAP" checked onchange="buildFU()"> DOT SAP</label>
+            <label class="opt"><input type="radio" name="fuClosingCert" value="Independent Provider" onchange="buildFU()"> Independent Provider</label>
+            <label class="opt"><input type="radio" name="fuClosingCert" value="None" onchange="buildFU()"> None</label>
+          </div>
+        </fieldset>
+        <div class="f"><label>SAP Full Name</label><input name="fuSapName" type="text" placeholder="Joshua Pair" oninput="buildFU()"></div>
+        <div class="f"><label>SAP Credentials</label><input name="fuSapCredentials" type="text" placeholder="M.Ed., LCDC, SAP" oninput="buildFU()"></div>
+      </div>
+      <div class="f mt" style="max-width:220px"><label>Signature Date</label><input name="fuSigDate" type="date" oninput="buildFU()"></div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Document Previews</h2><small>All 3 Generated Documents</small></div>
+      <div class="inl hp" style="margin-bottom:16px"><button type="button" class="p" onclick="buildFU()">Generate All Previews</button></div>
+      <div style="font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin-bottom:8px">① Biopsychosocial Assessment Update</div>
+      <div id="bioPrev" class="rprev" contenteditable="true" style="margin-bottom:20px;outline:none" oninput="markFURptEdited()"></div>
+      <div style="font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin-bottom:8px">② Follow-Up Evaluation Report</div>
+      <div id="fuRptPrev" class="rprev" contenteditable="true" style="margin-bottom:20px;outline:none" oninput="markFURptEdited()"></div>
+      <div style="font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);margin-bottom:8px">③ Follow-Up Testing Plan <span style="font-size:10px;color:var(--muted);font-weight:400">(Employer Only — Do Not Distribute to Employee)</span></div>
+      <div id="fuTestPrev" class="rprev" contenteditable="true" style="outline:none" oninput="markFURptEdited()"></div>
+      <div id="fuRptEditedBadge" style="display:none;margin-top:8px;font-size:11px;color:#6b4400;font-weight:600">✏ Reports manually edited — click ☁ Save to Sheets to save changes.</div>
+    </div>
+
+    <div class="card">
+      <div class="stitle"><h2>Counselor Signature</h2><small>For All Follow-Up Documents</small></div>
+      <canvas id="sigFU" class="sigpad"></canvas>
+      <div class="hp" style="display:flex;gap:8px;margin-top:8px">
+        <button type="button" class="g" style="background:var(--soft);color:var(--navy);border:1.5px solid var(--lined)" onclick="clearPad('sigFU')">Clear Signature</button>
+      </div>
+    </div>
+
+  </form>
+  </div>
+</div>
+
+<!-- ═══════ DASHBOARD ═══════ -->
+<div id="dashPg" class="pg">
+  <div class="wrap" style="padding-top:24px">
+    <div class="dashhero">
+      <h2>Client Records</h2>
+      <p>View all initial and follow-up evaluations. Click a badge to open the report. Click a card to view all records for that client.</p>
+      <div class="dstats">
+        <div class="dstat"><div class="dsl">Total Clients</div><div class="dsv" id="stTotal">—</div></div>
+        <div class="dstat"><div class="dsl">Initial Evals</div><div class="dsv" id="stIni">—</div></div>
+        <div class="dstat"><div class="dsl">Follow-Ups</div><div class="dsv" id="stFU">—</div></div>
+        <div class="dstat"><div class="dsl">This Month</div><div class="dsv" id="stMo">—</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="stitle" style="margin-bottom:0;border:none;padding:0"><h2>All Clients</h2></div>
+        <button class="p" onclick="loadDash()" style="font-size:12px">↻ Refresh</button>
+      </div>
+      <div class="sbar"><input type="text" id="srch" placeholder="Search by name, case #, employer, SSN…" oninput="filterCards()"></div>
+      <div id="cgrid" class="cgrid">
+        <div class="empty"><div class="ei">📋</div><h3>Loading records…</h3><p>Fetching from Google Sheets</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="moverlay" id="recModal">
+  <div class="modal">
+    <div class="mhead">
+      <div><h3 id="mName">Client Record</h3><div class="msub" id="mSub"></div></div>
+      <button class="mclose" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="mmeta" id="mMeta"></div>
+      <div class="mtabs" id="mTabs"></div>
+      <div id="mContents"></div>
+      <div class="inl" style="margin-top:16px;gap:8px" id="mActions"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var iniRecs=[],fuRecs=[],curRec=null;
+
+function fillBio(fieldName,selectEl){
+  var val=selectEl.value;if(!val)return;
+  var ta=document.querySelector('#fupForm [name="'+fieldName+'"]');
+  if(ta){ta.value=val;buildFU();}
+  selectEl.selectedIndex=0;
+}
+
+var MAST=[
+  {n:1,q:'Do you consider your drug/alcohol behavior normal?',yes:0,no:2},
+  {n:2,q:'Do you ever experience memory loss or convulsions the day after heavy drug/alcohol use?',yes:2,no:0},
+  {n:3,q:'Does your spouse (or parents) ever worry or complain about your drug/alcohol use?',yes:1,no:0},
+  {n:4,q:'Can you stop using drugs/alcohol without a struggle once you have begun?',yes:0,no:2},
+  {n:5,q:'Do you ever feel bad about your drug/alcohol use?',yes:1,no:0},
+  {n:6,q:'Do friends or relatives think that your drug/alcohol use is normal?',yes:0,no:2},
+  {n:7,q:'Are you always able to stop using drugs/alcohol when you want to?',yes:0,no:2},
+  {n:8,q:'Have you ever gone to AA, NA, or other self-help groups for your drug/alcohol use?',yes:5,no:0},
+  {n:9,q:'Have you ever gotten into fights while using drugs or alcohol?',yes:1,no:0},
+  {n:10,q:'Has drug/alcohol use ever created problems with you and your spouse (or parents)?',yes:2,no:0},
+  {n:11,q:'Has your spouse (or family member) ever gone to anyone for help about your drug/alcohol use?',yes:2,no:0},
+  {n:12,q:'Have you ever lost friends, girlfriends, or boyfriends because of your drug/alcohol use?',yes:2,no:0},
+  {n:13,q:'Have you ever gotten into trouble at school or at work because of your drug/alcohol use?',yes:2,no:0},
+  {n:14,q:'Have you ever lost a job or been suspended / expelled from school because of your drug/alcohol use?',yes:2,no:0},
+  {n:15,q:'Have you ever neglected obligations, family, work, or school for two or more days in a row because you were using drugs/alcohol?',yes:2,no:0},
+  {n:16,q:'Do you ever use drugs/alcohol before noon?',yes:1,no:0},
+  {n:17,q:'Have you ever been told that you have liver trouble?',yes:2,no:0},
+  {n:18,q:'Have you ever had seizures, severe shaking, heard voices, seen things not there, or felt out of control and panicky after heavy drug/alcohol use?',yes:5,no:0},
+  {n:19,q:'Have you ever gone to anyone for help about your drug/alcohol use?',yes:5,no:0},
+  {n:20,q:'Have you ever gone to a hospital because of your drug/alcohol use?',yes:5,no:0},
+  {n:21,q:'Have you ever been a patient in a psychiatric hospital or general hospital where drug/alcohol use was part of the problem?',yes:2,no:0},
+  {n:22,q:'Have you ever been seen at a psychiatric or mental health clinic, or gone to a doctor, social worker, or clergyman for help with an emotional problem in which drug/alcohol use played a part?',yes:2,no:0},
+  {n:23,q:'Have you ever been arrested, even for a few hours, because of behavior related to your drug/alcohol use?',yes:2,no:0},
+  {n:24,q:'Have you ever been arrested for driving while intoxicated?',yes:2,no:0}
+];
+var DAST=[
+  {n:1,q:'Have you used drugs other than those required for medical reasons?',ry:true},
+  {n:2,q:'Do you use more than one drug at a time?',ry:true},
+  {n:3,q:'Are you always able to stop using drugs when you want to?',ry:false},
+  {n:4,q:'Have you had blackouts or flashbacks as a result of drug use?',ry:true},
+  {n:5,q:'Do you ever feel bad or guilty about your drug use?',ry:true},
+  {n:6,q:'Does your spouse or a parent ever complain about your involvement with drugs?',ry:true},
+  {n:7,q:'Have you neglected your family because of your use of drugs?',ry:true},
+  {n:8,q:'Have you engaged in illegal activities in order to obtain drugs?',ry:true},
+  {n:9,q:'Have you ever experienced withdrawal symptoms when you stopped taking drugs?',ry:true},
+  {n:10,q:'Have you had medical problems as a result of your drug use?',ry:true}
+];
+
+function showPg(p){
+  var pageMap={ini:'iniPg',fup:'fupPg',dash:'dashPg'};
+  var tabMap={ini:'tabIni',fup:'tabFup',dash:'tabDash'};
+  document.querySelectorAll('.pg').forEach(function(e){e.classList.remove('on');});
+  document.querySelectorAll('.ntab').forEach(function(e){e.classList.remove('on');});
+  var pg=document.getElementById(pageMap[p]);
+  var tb=document.getElementById(tabMap[p]);
+  if(pg)pg.classList.add('on');
+  if(tb)tb.classList.add('on');
+  if(p==='dash')loadDash();
+}
+
+function buildTbls(){
+  document.getElementById('mastTbl').innerHTML=MAST.map(function(i){return'<tr><td>'+i.n+'</td><td>'+i.q+'</td><td><input type="radio" name="mast_'+i.n+'" value="yes" onchange="calcAll()"></td><td><input type="radio" name="mast_'+i.n+'" value="no" onchange="calcAll()"></td><td>Yes='+i.yes+' / No='+i.no+'</td></tr>';}).join('');
+  document.getElementById('dastTbl').innerHTML=DAST.map(function(i){return'<tr><td>'+i.n+'</td><td>'+i.q+'</td><td><input type="radio" name="dast_'+i.n+'" value="yes" onchange="calcAll()"></td><td><input type="radio" name="dast_'+i.n+'" value="no" onchange="calcAll()"></td><td>'+(i.ry?'Yes = 1':'No = 1')+'</td></tr>';}).join('');
+}
+
+function rv(n){var e=document.querySelector('input[name="'+n+'"]:checked');return e?e.value:'';}
+function cv(n){return Array.from(document.querySelectorAll('input[name="'+n+'"]:checked')).map(function(e){return e.value;});}
+function fd(v){if(!v)return'';var d=new Date(v+'T00:00:00');return isNaN(d.getTime())?v:d.toLocaleDateString('en-US');}
+function sf(v,fb){return(v||'').toString().trim()||(fb||'');}
+function setSt(id,m,e){var el=document.getElementById(id);if(!el)return;el.textContent=m;el.style.color=e?'#f4786a':'rgba(255,255,255,.5)';}
+
+function fobj(fid){
+  var fo=new FormData(document.getElementById(fid)),o={};
+  for(var p of fo.entries()){var k=p[0],v=p[1];if(o[k]){if(!Array.isArray(o[k]))o[k]=[o[k]];o[k].push(v);}else o[k]=v;}
+  ['identifiedProblem','docsSigned'].forEach(function(n){o[n]=cv(n);});
+  return o;
+}
+
+function calcMAST(){
+  var t=0;MAST.forEach(function(i){var v=rv('mast_'+i.n);if(v==='yes')t+=i.yes;if(v==='no')t+=i.no;});
+  var s,c;if(t<=3){s='Probably no drug/alcohol addiction';c='rg2';}else if(t===4){s='Borderline drug/alcohol addiction';c='rw';}else{s='Probably drug/alcohol addiction';c='rb';}
+  document.getElementById('mastSc').textContent=t;var mi=document.getElementById('mastIn');mi.textContent=s;mi.className=c;
+  return{total:t,interpretation:s};
+}
+function calcDAST(){
+  var t=0;DAST.forEach(function(i){var v=rv('dast_'+i.n);if(!v)return;t+=i.ry?(v==='yes'?1:0):(v==='no'?1:0);});
+  var s,c;if(t===0){s='No problems reported';c='rg2';}else if(t<=2){s='Low level';c='rg2';}else if(t<=5){s='Moderate level';c='rw';}else if(t<=8){s='Substantial level';c='rb';}else{s='Severe level';c='rb';}
+  document.getElementById('dastSc').textContent=t;var di=document.getElementById('dastIn');di.textContent=s;di.className=c;
+  return{total:t,interpretation:s};
+}
+function calcAll(){
+  var m=calcMAST(),d=calcDAST(),fl,nt;
+  if(m.total>=5||d.total>=6){fl='High Concern';nt='Scores suggest clinically significant substance-related risk.';}
+  else if(m.total===4||(d.total>=3&&d.total<=5)){fl='Moderate Concern';nt='Scores show a meaningful risk pattern; integrate into evaluation.';}
+  else{fl='Lower Concern';nt='Scores alone do not indicate high severity; clinical judgment required.';}
+  document.getElementById('combF').textContent=fl;
+  document.getElementById('combI').textContent=nt;
+  document.querySelector('[name="instrumentSummary"]').value='MAST: '+m.total+' ('+m.interpretation+'); DAST-10: '+d.total+' ('+d.interpretation+')';
+  buildRpt();
+}
+
+function syncRec(){
+  var edu=parseInt(document.querySelector('[name="educationHours"]').value||'0')||0;
+  var peer=parseInt(document.querySelector('[name="peerGroupCount"]').value||'0')||0;
+  var cns=parseInt(document.querySelector('[name="counselingSessions"]').value||'0')||0;
+  var scr=document.querySelector('[name="negativeScreenRequired"]').value||'Yes';
+  var ed=document.querySelector('[name="educationDetail"]').value.trim();
+  var pd=document.querySelector('[name="peerDetail"]').value.trim();
+  var td=document.querySelector('[name="treatmentDetail"]').value.trim();
+  var lines=[];
+  if(edu>0)lines.push('Education: '+edu+' hour(s)'+(ed?' — '+ed:''));
+  if(peer>0)lines.push('Peer support: '+peer+' group(s)'+(pd?' — '+pd:''));
+  if(cns>0)lines.push('Counseling / treatment: '+cns+' session(s)'+(td?' — '+td:''));
+  lines.push('Independent negative drug screen required: '+scr);
+  var s=lines.join('\n');
+  document.getElementById('recSum').textContent=s||'No recommendations entered yet.';
+  var box=document.querySelector('[name="sapRecommendation"]');
+  if(!box.dataset.ue||box.dataset.ue==='false')box.value=s;
+}
+
+// ── RESOURCE LINKS — treatment level now included here ──
+function resLinks(edu,peer,cns,tl,tlLink,tlDet){
+  var secs=[];
+  if(peer>0)secs.push('Peer Support Groups\n1. https://www.intherooms.com/home/\n2. Adult Children of Alcoholics: Find a Meeting\n3. Marijuana Anonymous: Find a Meeting\n4. Narcotics Anonymous: Find a Meeting\n5. Alcoholics Anonymous: Find a Meeting');
+  if(edu===4)secs.push('4 Hour Online Drug & Alcohol Education\n1. Substance Abuse 4-hour Nationwide Online Certified Course\n   https://ncoei.thinkific.com/courses/4-hour-drugs-alcohol-awareness-mandated-programs-thinkific?ref=0d79b\n2. Risk Prevention Online 4 hour course\n   https://www.ezlcms.com/v5/login/2214/RPO.aspx?buyGroupID=10124');
+  else if(edu===8)secs.push('8 Hour Online Drug & Alcohol Education\n1. Substance Abuse 8-hour Nationwide Online Certified Course\n   https://ncoei.thinkific.com/order?ct=62547ccf-eba2-4839-a910-bac93178adcf\n2. Risk Prevention Online 8 hour course\n   https://www.ezlcms.com/v5/login/2214/RPO.aspx?buyGroupID=14916');
+  else if(edu===16)secs.push('16 Hour Online Drug & Alcohol Education\n1. Substance Abuse 16-hour Nationwide Online Certified Course\n   https://ncoei.thinkific.com/courses/mp-16-hour-drugs-alcohol-awareness-including-prescription-street-drugs-cannabis-and-vaping-supportive-intervention-for-substance-abuse-addiction-dependence-prevention-risk-prevention-education-for-safety-first-awareness?ref=c1da15\n2. Risk Prevention Online 16 hour course\n   https://www.ezlcms.com/v5/login/2214/RPO.aspx?buyGroupID=10142');
+  else if(edu===20)secs.push('20 Hour Online Drug & Alcohol Education\n1. https://ncoei.thinkific.com/courses/mp-20-hour-drugs-alcohol-substance-abuse-behavior-modification-including-prescription-street-drugs-cannabis-and-vaping-supportive-intervention-for-substance-abuse-addiction-dependence-risk-prevention-education-for-safety-first-awareness?ref=f143ad\n2. https://www.riskpreventiononline.com');
+  else if(edu===32)secs.push('32 Hour Outpatient Clinical Treatment Program\n1. https://ncoei.thinkific.com/courses/corepso-us-dot-sap-32-hour-16-weeks-substance-abuse-outpatient-clinical-treatment-program-drugs-alcohol-addiction-dependence-recovery-and-relapse-cannabis-vaping-prescription-street-drugs?ref=f143ad\n2. https://www.riskpreventiononline.com');
+  else if(edu>0)secs.push(edu+' Hour Online Drug & Alcohol Education\n1. https://ncoei.thinkific.com/home?ref=f143ad\n2. https://www.riskpreventiononline.com');
+  if(cns>0)secs.push('Counseling\n1. Robert Unegbu, DSW, LCDC: 903.245.4753\n2. Savannah Daniel, LCDC: 903.315.0103\n3. Susan Freeman, LCSW, SAP: 903.720.8807\n4. Melissa Huston, LCSW-S, CRC, LCDC, SAP: 903.806.3547\n5. Ashley Long, LCDC, LPC-A, ADC, CART: 430.280.9381');
+  // Treatment level — only included if selected
+  if(tl&&tl!=='none'){
+    var tlLabel={'iop':'Intensive Outpatient Program (IOP)','residential':'Residential Treatment','custom':'Treatment Program'}[tl]||'Treatment Program';
+    var tlEntry=tlLabel;
+    if(tlDet)tlEntry+='\n'+tlDet;
+    if(tlLink)tlEntry+='\nProvider/Resource: '+tlLink;
+    secs.push(tlEntry);
+  }
+  return secs.length?'Recommendation Resources:\n\n'+secs.join('\n\n'):'';
+}
+
+function buildRpt(force){
+  if(force){rptManuallyEdited=false;document.getElementById('rptEditedBadge').style.display='none';}
+  var d=fobj('iniForm');
+  var rt=d.reportType||'DOT Employer',cc=d.closingCert||'DOT SAP',rl=d.returnLanguage||'Safety Sensitive';
+  var cn=sf(d.clientName,'EMPLOYEE NAME'),ed=fd(d.evalDate)||'INITIAL EVAL DATE';
+  var vd=fd(d.violationDate||d.positiveTestDate)||'date of violation',dob=fd(d.dob)||'DOB';
+  var ssn=sf(d.ssn,'Social Security Number'),cas=sf(d.caseNumber,'CASE#');
+  var dn=sf(d.derName,'DER Name'),dc=sf(d.derContact);
+  var co=sf(d.companyName||d.employer,'COMPANY'),ca=sf(d.companyAddress,'COMPANY ADDRESS');
+  var rh=sf(d.recipientHeader,'DISA Global Solutions, Inc.'),ra=sf(d.recipientAttention,'Attn: Return to Duty Department');
+  var tv=sf(d.violationLabel||d.reason||d.reasonNotes,'TYPE OF TEST VIOLATION');
+  var sn=sf(d.sapName,'Joshua Pair'),sc=sf(d.sapCredentials,'M.Ed., LCDC, SAP'),sd=fd(d.sapSigDate)||'DATE';
+  var nt=sf(d.dotReportNote);
+  var edu=parseInt(d.educationHours||'0')||0,peer=parseInt(d.peerGroupCount||'0')||0,cns=parseInt(d.counselingSessions||'0')||0;
+  var scr=d.negativeScreenRequired||'Yes';
+  var subs=(Array.isArray(d.identifiedProblem)?d.identifiedProblem:[]).filter(Boolean).join(', ');
+  var tl=rv('treatmentLevel')||'none';
+  var tlLink=sf(d.treatmentLink,'');
+  var tlDet=sf(d.treatmentLevelDetail,'');
+  var tlLabel={'iop':'Intensive Outpatient Program (IOP)','residential':'Residential Treatment','custom':'Treatment Program'}[tl]||'';
+  var recParts=[];
+  if(edu>0)recParts.push(edu+' hour'+(edu===1?'':'s')+' of drug and alcohol education');
+  if(peer>0)recParts.push(peer+' peer support group'+(peer===1?'':'s'));
+  if(cns>0)recParts.push(cns+' counseling session'+(cns===1?'':'s'));
+  if(tl&&tl!=='none'&&tlLabel)recParts.push(tlLabel+(tlDet?' ('+tlDet+')':''));
+  if(scr==='Yes')recParts.push('an independent negative drug screen');
+  var recP=recParts.length?'My recommendations are as follows: '+recParts.join(', ')+'.':'';
+  var retP='';
+  var retParts=[];
+  if(edu>0)retParts.push(edu+' hour'+(edu===1?'':'s')+' of drug and alcohol education');
+  if(peer>0)retParts.push(peer+' peer support group'+(peer===1?'':'s'));
+  if(cns>0)retParts.push(cns+' counseling session'+(cns===1?'':'s'));
+  if(tl&&tl!=='none'&&tlLabel)retParts.push(tlLabel+(tlDet?' ('+tlDet+')':''));
+  if(scr==='Yes')retParts.push('an independent negative drug screen');
+  var retReqs=retParts.length?' after completion of '+retParts.join(', '):'';
+  if(rl==='Safety Sensitive')retP=cn+' may be eligible to meet with me for consideration of return to safety-sensitive duties'+retReqs+'.';
+  else if(rl==='Return to Duty')retP=cn+' may be eligible to meet with me for consideration of return to duty'+retReqs+'.';
+  var dl=subs?cn+' was evaluated using the MAST/DAST and a clinical interview was performed. Relevant substance(s): '+subs+'.':cn+' was evaluated using the MAST/DAST and a clinical interview was performed.';
+  var cert='';
+  if(cc==='DOT SAP')cert='I certify that I am a DOT-qualified Substance Abuse Professional (SAP) and that I have knowledge of and clinical experience in the diagnosis and treatment of alcohol and controlled substance use and related disorders. As a DOT SAP, I have complied with DOT regulations regarding my evaluation and monitoring of the above-named employee.';
+  else if(cc==='Independent Provider')cert='I certify that I am not employed by, nor do I receive remuneration from, nor do I have financial interest in the above named treatment provider program. I certify that I have knowledge of and clinical experience in the diagnosis and treatment of alcohol and controlled substance use and related disorders. I certify that I provided a comprehensive face-to-face assessment and clinical evaluation of this employee.';
+  var hdr='',addr='',re='',intro='';
+  if(rt==='DOT Employer'||rt==='Non-DOT Employer'){addr=ed+'\n\n'+dn+'\n'+co+'\n'+ca;if(dc)addr+='\n'+dc;re='RE: '+cn+'    DOB: '+dob+'\nSS# '+ssn+'    CASE#: '+cas;intro=rt==='DOT Employer'?'On '+ed+' I assessed '+cn+' face-to-face remotely using Google Workspace following a '+tv+' on '+vd+'. This is a violation of the Department of Transportation\'s Federal Drug and Alcohol Testing rules.':'On '+ed+' I assessed '+cn+' face-to-face remotely using Google Workspace following a '+tv+' on '+vd+'. This evaluation is due to a violation of your company drug and alcohol policy.';}
+  if(rt==='DISA'){hdr='INITIAL EVALUATION REPORT';addr=ed+'\n\n'+rh+'\n'+ra;re='RE: '+cn+'\nSS# '+ssn;intro='On '+ed+' I assessed '+cn+' face-to-face remotely using Google Workspace following a '+tv+' on '+vd+'. This evaluation is due to a violation of your company drug and alcohol policy.';}
+  if(rt==='Self Referral'){hdr='INITIAL EVALUATION REPORT';addr=ed;re='RE: '+cn+'    DOB: '+dob+'\nSS# '+ssn+'    CASE#: '+cas;intro='On '+ed+' I assessed '+cn+' face-to-face remotely using Google Workspace for a self-referral involving '+tv+'.';}
+  var secs=[];
+  if(hdr)secs.push(hdr);if(addr)secs.push(addr);if(re)secs.push(re);
+  secs.push(intro);secs.push(dl);secs.push(recP);
+  if(retP&&rt!=='Self Referral')secs.push(retP);
+  var res=resLinks(edu,peer,cns,tl,tlLink,tlDet);if(res)secs.push(res);
+  if(nt)secs.push('Additional report note:\n'+nt);if(cert)secs.push(cert);
+  secs.push('Should you have any questions, please contact me at 903.445.8953.\n\nName: '+sn+', '+sc+'\n\nSignature:\nDate: '+sd);
+  var lh='Addiction Recovery Solutions, PLLC\nJoshua Pair, M.Ed., LCDC, SAP · DOT-Qualified SAP · 49 CFR Part 40\n410 Rocket St. · Longview, TX 75603 · 903.445.8953\njoshuapair'+'@'+'addictionrecoverysolutions.org\nConfidential\n\n'+secs.join('\n\n');
+  if(!rptManuallyEdited){document.getElementById('rptPrev').textContent=lh;}
+}
+
+function buildFU(){
+  var d=fobj('fupForm');
+  var cn=sf(d.fuClientName,'EMPLOYEE NAME'),fuDt=fd(d.fuDate)||'FOLLOW-UP DATE';
+  var ssn=sf(d.fuSsn,'Social Security Number'),cas=sf(d.fuCaseNumber,'CASE#');
+  var sn=sf(d.fuSapName,'Joshua Pair'),sc=sf(d.fuSapCredentials,'M.Ed., LCDC, SAP'),sd=fd(d.fuSigDate)||'DATE';
+  var initRec=sf(d.initialRecommendations,'initial recommendations');
+  var fuEvDt=fd(d.fuEvalDate)||fuDt,partDts=sf(d.programParticipationDates,'[program participation dates]');
+  var eduH=parseInt(d.eduHours||'0')||0,eduPr=sf(d.eduProvider,'[Education Provider]'),eduDt=fd(d.eduDate)||'[Education Date]';
+  var peerG=parseInt(d.peerGroups||'0')||0,peerDts=sf(d.peerGroupDates,'[peer group dates]');
+  var cnsSs=parseInt(d.fuCounselingSessions||'0')||0,couns=sf(d.counselor,'[Counselor]');
+  var cnsS=fd(d.counselingStart)||'[start date]',cnsE=fd(d.counselingEnd)||'[end date]';
+  var cLoc=sf(d.collectionLocation,'[Collection Location]'),mro=sf(d.mroCollector,'[MRO/Collector & Name]'),tsDt=fd(d.drugTestDate)||'[Drug Test Date]';
+  var tsSub=d.testSubstance||'drug',ac=d.aftercareRecommendation||'none',acDet=sf(d.aftercareDetail,'');
+  var fuTC=sf(d.followUpTestCount,'[Insert Number]'),fuRt=d.fuReportType||'DOT Employer';
+  var fuDer=sf(d.fuDerName,'[DER Name]'),fuCo=sf(d.fuCompany,'[COMPANY]'),fuAd=sf(d.fuAddress,'[ADDRESS]');
+  var fuRH=sf(d.fuRecipientHeader,'DISA Global Solutions, Inc.'),fuRA=sf(d.fuRecipientAttn,'Attn: Return to Duty Department');
+  var fuCC=d.fuClosingCert||'DOT SAP';
+  var b=[];
+  b.push('Biopsychosocial Assessment Update\n\nAddiction Recovery Solutions, PLLC\nJoshua Pair, M.Ed., LCDC, SAP\n410 Rocket St.\nLongview, TX 75603\n903.445.8953\njoshuapair'+'@'+'addictionrecoverysolutions.org\n\nConfidential');
+  b.push('Client Name: '+cn+'\nDate: '+fuDt);
+  if(d.presentingProblem)b.push('Presenting Problem:\n '+d.presentingProblem);
+  if(d.medicalStatus)b.push('Medical Status:\n '+d.medicalStatus);
+  if(d.employmentStatus)b.push('Employment/Support Status:\n'+d.employmentStatus);
+  if(d.alcoholDrugsUpdate)b.push('Alcohol/Other Drugs:\n '+d.alcoholDrugsUpdate);
+  if(d.legalStatus)b.push('Legal Status:\n '+d.legalStatus);
+  if(d.familySocial)b.push('Family/Social Relationships:\n '+d.familySocial);
+  if(d.psychiatricStatus)b.push('Psychiatric Status/Threat to Self or Others:\n '+d.psychiatricStatus);
+  if(d.strengthsNeeds)b.push('Abilities, Strengths, Needs, and Preferences:\n '+d.strengthsNeeds);
+  b.push('Counselor Signature:\nDate: '+sd+'\n\nName: '+sn+', '+sc);
+  var bioText=b.join('\n\n');
+  if(!fuRptManuallyEdited)document.getElementById('bioPrev').textContent=bioText;
+  var f=[];
+  f.push('FOLLOW-UP EVALUATION REPORT');
+  var fa=fuRt==='DISA'?fuDt+'\n\n'+fuRH+'\n'+fuRA:fuDt+'\n\n'+fuDer+'\n'+fuCo+'\n'+fuAd;
+  f.push(fa);
+  f.push('RE:\nEmployee Name: '+cn+'\nSS#: '+ssn);
+  f.push('My recommendations were as follows: '+initRec);
+  f.push('On '+fuEvDt+', a face-to-face follow-up evaluation was performed remotely using Google Workspace. It has been confirmed that from '+partDts+', '+cn+' has been participating in the '+eduH+' hours of drug and alcohol education at '+eduPr+' on '+eduDt+'. '+cn+' attended '+peerG+' peer support groups: '+peerDts+', '+cnsSs+' counseling sessions with '+couns+' from '+cnsS+' through '+cnsE+', and '+cLoc+' '+mro+' reports on '+tsDt+' that '+cn+' had a negative urine screen since their admission. They, therefore, demonstrated compliance with my initial recommendations.');
+  f.push('I am recommending '+cn+' be given an alcohol and drug return-to-duty test. Upon receipt of a negative result, you may choose to return them to their duties.');
+  f.push('In addition, it is required that '+cn+' submit to '+fuTC+' random alcohol and drug follow-up tests within the first year of their return to duty. These tests are to be performed in addition to any other testing your company may have them participate in.');
+  var acTxt='No aftercare recommendations at this time.';
+  if(ac==='iop')acTxt='It is recommended that the employee attend IOP as aftercare.';
+  else if(ac==='meetings')acTxt='It is recommended that the employee attend self-help meetings as aftercare.';
+  else if(ac==='both'||ac==='custom')acTxt=acDet?'It is recommended that the employee attend as aftercare:\n'+acDet:'It is recommended that the employee attend IOP and self-help meetings as aftercare.';
+  f.push(acTxt);
+  var fuCrt='';
+  if(fuCC==='DOT SAP')fuCrt='I certify that I am a DOT-qualified Substance Abuse Professional (SAP) and that I have knowledge of and clinical experience in the diagnosis and treatment of alcohol and controlled substance use and related disorders. As a DOT SAP, I have complied with DOT regulations regarding my evaluation and monitoring of the above-named employee.\n\nI certify that I am not employed by, nor do I receive remuneration from, nor do I have financial interest in the above named treatment provider program. I certify that I have knowledge of and clinical experience in the diagnosis and treatment of alcohol and controlled substance use and related disorders. I certify that I provided a comprehensive face-to-face assessment and clinical evaluation of this employee.';
+  else if(fuCC==='Independent Provider')fuCrt='I certify that I am not employed by, nor do I receive remuneration from, nor do I have financial interest in the above named treatment provider program. I certify that I have knowledge of and clinical experience in the diagnosis and treatment of alcohol and controlled substance use and related disorders. I certify that I provided a comprehensive face-to-face assessment and clinical evaluation of this employee.';
+  if(fuCrt)f.push(fuCrt);
+  f.push('Should you have any questions, please contact me at 903.445.8953.\n\n'+sn+', '+sc+'\n\nSignature:\nDate: '+sd);
+  var fuRptText=f.join('\n\n');
+  if(!fuRptManuallyEdited)document.getElementById('fuRptPrev').textContent=fuRptText;
+  var t=[];
+  t.push('FOLLOW-UP TESTING PLAN\n\nFor employers only, not to be distributed to employee');
+  t.push('Re: '+cn+' '+ssn);
+  t.push(cn+' is recommended to submit to a return-to-duty test for '+tsSub+'.');
+  t.push('This employee is required to be tested for '+tsSub+' upon return to duty as follows:\n\n  • First 6 months: Two tests per month\n  • Next 6 months: One test per month\n\nThese tests are to be performed in addition to any other testing your company may have.');
+  t.push('Conducting all DOT RTD and Follow-Up tests under Direct Observation is an employer requirement.');
+  t.push('Name: '+sn+', '+sc+'\n\nSignature:\nDate: '+sd);
+  var fuTestText=t.join('\n\n');
+  if(!fuRptManuallyEdited)document.getElementById('fuTestPrev').textContent=fuTestText;
+}
+
+var rptManuallyEdited=false;
+var fuRptManuallyEdited=false;
+function markRptEdited(){rptManuallyEdited=true;document.getElementById('rptEditedBadge').style.display='block';}
+function markFURptEdited(){fuRptManuallyEdited=true;document.getElementById('fuRptEditedBadge').style.display='block';}
+
+function saveSheets(){
+  var btn=document.getElementById('shBtn');btn.disabled=true;setSt('sst','Saving…');
+  calcAll();buildRpt();
+  var d=fobj('iniForm');
+  d.mastScore=document.getElementById('mastSc').textContent;
+  d.mastInterpretation=document.getElementById('mastIn').textContent;
+  d.dastScore=document.getElementById('dastSc').textContent;
+  d.dastInterpretation=document.getElementById('dastIn').textContent;
+  d.reportText=document.getElementById('rptPrev').innerText||document.getElementById('rptPrev').textContent;
+  var ma={},da={};
+  MAST.forEach(function(i){ma[i.n]=rv('mast_'+i.n);});
+  DAST.forEach(function(i){da[i.n]=rv('dast_'+i.n);});
+  d.mastAnswers=JSON.stringify(ma);d.dastAnswers=JSON.stringify(da);
+  google.script.run
+    .withSuccessHandler(function(r){setSt('sst','✓ Saved! ID: '+(r&&r.id?r.id:'ok'));btn.disabled=false;rptManuallyEdited=false;document.getElementById('rptEditedBadge').style.display='none';})
+    .withFailureHandler(function(e){setSt('sst','Save failed: '+(e.message||e),true);btn.disabled=false;})
+    .saveSapEvaluation(d);
+}
+
+function saveFUSheets(){
+  var btn=document.getElementById('fuBtn');btn.disabled=true;setSt('fust','Saving…');
+  buildFU();
+  var d=fobj('fupForm');
+  d.clientName=d.fuClientName;d.ssn=d.fuSsn;d.caseNumber=d.fuCaseNumber;
+  d.counselingSessions=d.fuCounselingSessions;
+  d.bioReport=document.getElementById('bioPrev').innerText||document.getElementById('bioPrev').textContent;
+  d.fuReport=document.getElementById('fuRptPrev').innerText||document.getElementById('fuRptPrev').textContent;
+  d.fuTestingPlan=document.getElementById('fuTestPrev').innerText||document.getElementById('fuTestPrev').textContent;
+  google.script.run
+    .withSuccessHandler(function(r){setSt('fust','✓ Saved! ID: '+(r&&r.id?r.id:'ok'));btn.disabled=false;fuRptManuallyEdited=false;document.getElementById('fuRptEditedBadge').style.display='none';})
+    .withFailureHandler(function(e){setSt('fust','Save failed: '+(e.message||e),true);btn.disabled=false;})
+    .saveFollowUpEvaluation(d);
+}
+
+function saveD(){setSt('sst','Saving draft…');var d=fobj('iniForm');MAST.forEach(function(i){d['mast_'+i.n]=rv('mast_'+i.n);});DAST.forEach(function(i){d['dast_'+i.n]=rv('dast_'+i.n);});d.sigData=document.getElementById('sigIni').toDataURL('image/png');google.script.run.withSuccessHandler(function(){setSt('sst','Draft saved.');}).withFailureHandler(function(){setSt('sst','Draft save failed.',true);}).saveDraft(d);}
+function loadD(){setSt('sst','Loading…');google.script.run.withSuccessHandler(function(data){if(!data){setSt('sst','No draft found.');return;}restoreF('iniForm',data);MAST.forEach(function(i){var el=document.querySelector('input[name="mast_'+i.n+'"][value="'+data['mast_'+i.n]+'"]');if(el)el.checked=true;});DAST.forEach(function(i){var el=document.querySelector('input[name="dast_'+i.n+'"][value="'+data['dast_'+i.n]+'"]');if(el)el.checked=true;});if(data.sigData)drawPad('sigIni',data.sigData);syncRec();calcAll();buildRpt();setSt('sst','Draft loaded.');}).withFailureHandler(function(){setSt('sst','Load failed.',true);}).loadDraft();}
+function saveFUD(){setSt('fust','Saving draft…');var d=fobj('fupForm');d.sigData=document.getElementById('sigFU').toDataURL('image/png');google.script.run.withSuccessHandler(function(){setSt('fust','Draft saved.');}).withFailureHandler(function(){setSt('fust','Draft save failed.',true);}).saveFollowUpDraft(d);}
+function loadFUD(){setSt('fust','Loading…');google.script.run.withSuccessHandler(function(data){if(!data){setSt('fust','No draft found.');return;}restoreF('fupForm',data);if(data.sigData)drawPad('sigFU',data.sigData);buildFU();setSt('fust','Draft loaded.');}).withFailureHandler(function(){setSt('fust','Load failed.',true);}).loadFollowUpDraft();}
+
+function restoreF(fid,data){
+  Object.keys(data).forEach(function(k){
+    var els=document.querySelectorAll('#'+fid+' [name="'+k+'"]');if(!els.length)return;
+    els.forEach(function(el){
+      if(el.type==='checkbox'){var a=Array.isArray(data[k])?data[k]:[data[k]];el.checked=a.indexOf(el.value)>-1;}
+      else if(el.type==='radio'){el.checked=el.value===data[k];}
+      else{el.value=data[k];}
+    });
+  });
+}
+function clearIni(){if(!confirm('Clear all initial evaluation data?'))return;document.getElementById('iniForm').reset();document.querySelector('[name="instrumentSummary"]').value='';document.getElementById('rptPrev').textContent='';clearPad('sigIni');google.script.run.clearDraft();setSt('sst','Cleared.');}
+function clearFU(){if(!confirm('Clear all follow-up data?'))return;document.getElementById('fupForm').reset();['bioPrev','fuRptPrev','fuTestPrev'].forEach(function(id){document.getElementById(id).textContent='';});clearPad('sigFU');google.script.run.clearFollowUpDraft();setSt('fust','Cleared.');}
+
+function loadDash(){
+  document.getElementById('cgrid').innerHTML='<div class="empty"><div class="ei">⏳</div><h3>Loading…</h3></div>';
+  google.script.run
+    .withSuccessHandler(function(res){iniRecs=res.initial||[];fuRecs=res.followup||[];fillLinkSel();renderDash();})
+    .withFailureHandler(function(e){document.getElementById('cgrid').innerHTML='<div class="empty"><div class="ei">⚠️</div><h3>Load failed</h3><p>'+(e.message||e)+'</p></div>';})
+    .getAllRecords();
+}
+
+function fillLinkSel(){
+  var s=document.getElementById('linkSel');
+  s.innerHTML='<option value="">— Select to auto-fill from initial eval —</option>';
+  iniRecs.forEach(function(r){var o=document.createElement('option');o.value=r.id;o.textContent=(r.clientName||'Unknown')+' — '+(r.evalDate?fd(r.evalDate):r.savedAt||'');s.appendChild(o);});
+}
+
+function autoFill(){
+  var id=document.getElementById('linkSel').value;if(!id)return;
+  var r=iniRecs.find(function(x){return x.id===id;});if(!r)return;
+  var set=function(n,v){var el=document.querySelector('#fupForm [name="'+n+'"]');if(el&&!el.value)el.value=v||'';};
+  set('fuClientName',r.clientName);set('fuSsn',r.ssn);set('fuCaseNumber',r.caseNumber);
+  set('initialRecommendations',(r.educationHours||'0')+'hr education, '+(r.peerGroupCount||'0')+' peer groups, '+(r.counselingSessions||'0')+' counseling sessions, negative screen');
+  set('fuDerName',r.derName);set('fuCompany',r.companyName||r.employer);set('fuAddress',r.companyAddress);
+  buildFU();
+}
+
+function renderDash(){
+  var clients={};
+  iniRecs.forEach(function(r){var k=(r.clientName||'Unknown').toLowerCase().trim();if(!clients[k])clients[k]={name:r.clientName||'Unknown',ini:[],fu:[]};clients[k].ini.push(r);});
+  fuRecs.forEach(function(r){var cn=r.clientName||r.fuClientName||'Unknown';var k=cn.toLowerCase().trim();if(!clients[k])clients[k]={name:cn,ini:[],fu:[]};clients[k].fu.push(r);});
+  var arr=Object.values(clients).sort(function(a,b){return a.name.localeCompare(b.name);});
+  var mo=new Date();mo.setDate(1);mo.setHours(0,0,0,0);
+  var mc=0;iniRecs.forEach(function(r){if(r.savedAt&&new Date(r.savedAt)>=mo)mc++;});fuRecs.forEach(function(r){if(r.savedAt&&new Date(r.savedAt)>=mo)mc++;});
+  document.getElementById('stTotal').textContent=arr.length;
+  document.getElementById('stIni').textContent=iniRecs.length;
+  document.getElementById('stFU').textContent=fuRecs.length;
+  document.getElementById('stMo').textContent=mc;
+  if(!arr.length){document.getElementById('cgrid').innerHTML='<div class="empty"><div class="ei">📋</div><h3>No records yet</h3><p>Save your first evaluation to see it here.</p></div>';return;}
+  document.getElementById('cgrid').innerHTML=arr.map(function(c){
+    var li=c.ini.sort(function(a,b){return new Date(b.savedAt)-new Date(a.savedAt);})[0];
+    var dt=li?fd(li.evalDate)||li.savedAt:'';
+    var ssn=li?sf(li.ssn,''):'';var emp=li?sf(li.employer||li.companyName,''):'';
+    var ib=c.ini.map(function(r){return'<span class="rbadge ini" onclick="openRec(\''+r.id+'\',\'ini\');event.stopPropagation()">📋 Initial '+(fd(r.evalDate)||'')+'</span>';}).join('');
+    var fb=c.fu.map(function(r){return'<span class="rbadge fu" onclick="openRec(\''+r.id+'\',\'fu\');event.stopPropagation()">✅ Follow-Up '+(fd(r.fuDate)||'')+'</span>';}).join('');
+    return'<div class="ccard" onclick="openClient(\''+c.name.replace(/'/g,"\\'")+'\')">'
+      +'<div class="ccn">'+c.name+'</div>'
+      +'<div class="ccm">'+(dt?'<span>📅 '+dt+'</span>':'')+(ssn?'<span>SSN: ••••'+ssn.slice(-4)+'</span>':'')+(emp?'<span>🏢 '+emp+'</span>':'')+'</div>'
+      +'<div class="ccr">'+(ib||'<span style="font-size:11px;color:var(--muted)">No initial evals</span>')+fb+'</div>'
+      +'<div class="cca"><button class="ccbtn" onclick="event.stopPropagation();startFU(\''+c.name.replace(/'/g,"\\'")+'\')">+ Follow-Up</button>'
+      +(li?'<button class="ccbtn del" onclick="event.stopPropagation();delRec(\''+li.id+'\',\'ini\')">Delete</button>':'')
+      +'</div></div>';
+  }).join('');
+}
+
+function filterCards(){
+  var q=document.getElementById('srch').value.toLowerCase();
+  document.querySelectorAll('.ccard').forEach(function(c){c.style.display=c.textContent.toLowerCase().includes(q)?'':'none';});
+}
+
+function startFU(name){
+  showPg('fup');
+  var n=document.querySelector('[name="fuClientName"]');if(n&&!n.value)n.value=name;
+  var m=iniRecs.find(function(r){return(r.clientName||'').toLowerCase()===name.toLowerCase();});
+  if(m){document.getElementById('linkSel').value=m.id;autoFill();}
+}
+
+function openClient(name){
+  var ir=iniRecs.filter(function(r){return(r.clientName||'').toLowerCase()===name.toLowerCase();});
+  var fr=fuRecs.filter(function(r){return(r.clientName||r.fuClientName||'').toLowerCase()===name.toLowerCase();});
+  if(ir.length===1&&fr.length===0){openRec(ir[0].id,'ini');return;}
+  if(ir.length===0&&fr.length===1){openRec(fr[0].id,'fu');return;}
+  if(ir.length>0)openRec(ir[0].id,'ini');else if(fr.length>0)openRec(fr[0].id,'fu');
+}
+
+function openRec(id,type){
+  var r=type==='ini'?iniRecs.find(function(x){return x.id===id;}):fuRecs.find(function(x){return x.id===id;});
+  if(!r)return;curRec={r:r,type:type};
+  document.getElementById('mName').textContent=r.clientName||r.fuClientName||'Client';
+  document.getElementById('mSub').textContent=type==='ini'?'Initial SAP Evaluation':'Follow-Up Evaluation';
+  var meta='';
+  if(type==='ini')meta='<div class="mi"><div class="mil">Eval Date</div><div class="miv">'+(fd(r.evalDate)||'—')+'</div></div><div class="mi"><div class="mil">Report Type</div><div class="miv">'+(r.reportType||'—')+'</div></div><div class="mi"><div class="mil">MAST / DAST</div><div class="miv">'+(r.mastScore||'—')+' / '+(r.dastScore||'—')+'</div></div>';
+  else meta='<div class="mi"><div class="mil">Follow-Up Date</div><div class="miv">'+(fd(r.fuDate)||'—')+'</div></div><div class="mi"><div class="mil">Education Hrs</div><div class="miv">'+(r.eduHours||'—')+'</div></div><div class="mi"><div class="mil">Counseling Sessions</div><div class="miv">'+(r.counselingSessions||r.fuCounselingSessions||'—')+'</div></div>';
+  document.getElementById('mMeta').innerHTML=meta;
+  var tabs='',conts='';
+  if(type==='ini'){
+    tabs='<button class="mtab on" onclick="event.stopPropagation();swMTab(0)">📋 Evaluation</button><button class="mtab" onclick="event.stopPropagation();swMTab(1)">📄 Report Letter</button>';
+    var el=[];
+    el.push('INITIAL SAP EVALUATION SUMMARY');
+    el.push('Addiction Recovery Solutions, PLLC\nJoshua Pair, M.Ed., LCDC, SAP · DOT-Qualified SAP\n410 Rocket St. · Longview, TX 75603 · 903.445.8953\n');
+    el.push('─────────────────────────────────');
+    el.push('CLIENT INFORMATION\nName: '+(r.clientName||'—')+'\nDOB: '+(r.dob||'—')+'\nSSN: '+(r.ssn||'—')+'\nCase #: '+(r.caseNumber||'—')+'\nEval Date: '+(r.evalDate||'—'));
+    el.push('─────────────────────────────────');
+    el.push('ASSESSMENT REASON\nReason: '+(r.reason||'—')+'\nIndustry: '+(r.industry||'—')+'\nEmployer: '+(r.employer||'—')+'\nType of Test: '+(r.typeOfTest||'—')+'\nViolation Date: '+(r.positiveTestDate||'—')+(r.reasonNotes?'\nNotes: '+r.reasonNotes:''));
+    el.push('─────────────────────────────────');
+    el.push('IDENTIFIED PROBLEM\nSubstance(s): '+(r.identifiedProblem||'—')+(r.alcoholQty?'\nAlcohol Qty: '+r.alcoholQty:'')+(r.alcoholFirstUse?'\nAlcohol First Use: '+r.alcoholFirstUse:'')+(r.alcoholLastFrequency?'\nAlcohol Last/Freq: '+r.alcoholLastFrequency:'')+(r.drug1Name?'\nDrug 1: '+r.drug1Name+(r.drug1Qty?' | '+r.drug1Qty:'')+(r.drug1Details?' | '+r.drug1Details:''):'')+(r.drug2Name?'\nDrug 2: '+r.drug2Name+(r.drug2Qty?' | '+r.drug2Qty:'')+(r.drug2Details?' | '+r.drug2Details:''):'')+(r.historyPositiveTests?'\nHistory Positive Tests: '+r.historyPositiveTests:'')+(r.historyDwi?'\nHistory DWI/DUI: '+r.historyDwi:'')+(r.previousTreatment?'\nPrev Treatment: '+r.previousTreatment+(r.previousTreatmentExplain?' — '+r.previousTreatmentExplain:''):'')+(r.problemHistory?'\nBackground: '+r.problemHistory:''));
+    el.push('─────────────────────────────────');
+    el.push('MENTAL STATUS\nIntoxicated: '+(r.intoxicated||'—')+'\nOrientation: '+(r.orientation||'—')+'\nPresentation: '+(r.physicalPresentation||'—')+(r.presentationComments?'\nComments: '+r.presentationComments:'')+'\nAcknowledges Problem: '+(r.ackProblem||'—')+'\nDenial Evident: '+(r.denial||'—')+(r.denialComments?'\nDenial Comments: '+r.denialComments:'')+(r.diagnosisComments?'\nDiagnosis Comments: '+r.diagnosisComments:'')+(r.currentMeds?'\nCurrent Medications: '+r.currentMeds:''));
+    el.push('─────────────────────────────────');
+    el.push('INSTRUMENT SCORES\nMAST: '+(r.mastScore||'—')+' — '+(r.mastInterpretation||'—')+'\nDAST-10: '+(r.dastScore||'—')+' — '+(r.dastInterpretation||'—')+(r.instrumentSummary?'\nSummary: '+r.instrumentSummary:'')+(r.instrumentComments?'\nComments: '+r.instrumentComments:''));
+    el.push('─────────────────────────────────');
+    el.push('RECOMMENDATIONS\nEducation Hours: '+(r.educationHours||'0')+'\nPeer Support Groups: '+(r.peerGroupCount||'0')+'\nCounseling Sessions: '+(r.counselingSessions||'0')+'\nNeg Screen Required: '+(r.negativeScreenRequired||'Yes')+(r.educationDetail?'\nEducation Detail: '+r.educationDetail:'')+(r.peerDetail?'\nPeer Detail: '+r.peerDetail:'')+(r.treatmentDetail?'\nTreatment Detail: '+r.treatmentDetail:'')+(r.sapRecommendation?'\nRecommendation Summary:\n'+r.sapRecommendation:''));
+    el.push('─────────────────────────────────');
+    el.push('SAP: '+(r.sapName||'Joshua Pair')+', '+(r.sapCredentials||'M.Ed., LCDC, SAP')+'\nDate: '+(r.sapSigDate||'—'));
+    var evalSummary=el.join('\n\n');
+    conts='<div class="mtc on"><div class="mrep">'+evalSummary+'</div></div>'
+         +'<div class="mtc"><div class="mrep">'+(r.reportText||'No report saved.')+'</div></div>';
+  }else{
+    tabs='<button class="mtab on" onclick="event.stopPropagation();swMTab(0)">📝 Biopsychosocial</button><button class="mtab" onclick="event.stopPropagation();swMTab(1)">📄 Follow-Up Report</button><button class="mtab" onclick="event.stopPropagation();swMTab(2)">📋 Testing Plan</button>';
+    conts='<div class="mtc on"><div class="mrep">'+(r.bioReport||'No biopsychosocial report saved.')+'</div></div><div class="mtc"><div class="mrep">'+(r.fuReport||'No follow-up report saved.')+'</div></div><div class="mtc"><div class="mrep">'+(r.fuTestingPlan||'No testing plan saved.')+'</div></div>';
+  }
+  document.getElementById('mTabs').innerHTML=tabs;
+  document.getElementById('mContents').innerHTML=conts;
+  document.getElementById('mActions').innerHTML='<button class="p" onclick="printRec()" style="font-size:12px">🖨 Print Current Tab as PDF</button><button class="nv" onclick="loadIntoForm()" style="font-size:12px">📝 Load into Form</button><button class="d" onclick="delCur()" style="font-size:12px">🗑 Delete</button>';
+  document.getElementById('recModal').classList.add('on');
+}
+
+function swMTab(i){
+  var tabsEl=document.getElementById('mTabs');
+  var contEl=document.getElementById('mContents');
+  if(tabsEl)tabsEl.querySelectorAll('.mtab').forEach(function(t,j){t.classList.toggle('on',j===i);});
+  if(contEl)contEl.querySelectorAll('.mtc').forEach(function(c,j){c.classList.toggle('on',j===i);});
+}
+function closeModal(){document.getElementById('recModal').classList.remove('on');curRec=null;}
+
+function printRec(){
+  if(!curRec)return;
+  var el=document.querySelector('.mtc.on .mrep');if(!el)return;
+  var w=window.open('','_blank');
+  w.document.write('<html><head><title>ARS SAP Report</title><style>body{font-family:Georgia,serif;font-size:13px;line-height:1.85;padding:1in;color:#111;white-space:pre-wrap;max-width:7.5in;margin:0 auto;}</style></head><body>'+el.textContent+'</body></html>');
+  w.document.close();w.print();
+}
+
+function loadIntoForm(){
+  if(!curRec)return;var r=curRec.r,t=curRec.type;closeModal();
+  if(t==='ini'){
+    showPg('ini');restoreF('iniForm',r);
+    if(r.mastAnswers){try{var ma=typeof r.mastAnswers==='string'?JSON.parse(r.mastAnswers):r.mastAnswers;MAST.forEach(function(i){var el=document.querySelector('input[name="mast_'+i.n+'"][value="'+ma[i.n]+'"]');if(el)el.checked=true;});}catch(e){}}
+    if(r.dastAnswers){try{var da=typeof r.dastAnswers==='string'?JSON.parse(r.dastAnswers):r.dastAnswers;DAST.forEach(function(i){var el=document.querySelector('input[name="dast_'+i.n+'"][value="'+da[i.n]+'"]');if(el)el.checked=true;});}catch(e){}}
+    syncRec();calcAll();buildRpt();
+  }else{
+    showPg('fup');
+    var mapped=Object.assign({},r,{fuClientName:r.clientName||r.fuClientName,fuSsn:r.ssn||r.fuSsn,fuCaseNumber:r.caseNumber||r.fuCaseNumber});
+    restoreF('fupForm',mapped);buildFU();
+  }
+}
+
+function delCur(){if(!curRec)return;if(!confirm('Delete this record permanently?'))return;var r=curRec.r,t=curRec.type;closeModal();delRec(r.id,t);}
+function delRec(id,type){
+  if(!confirm('Delete this record permanently?'))return;
+  var fn=type==='ini'?'deleteSapEvaluation':'deleteFollowUpEvaluation';
+  google.script.run.withSuccessHandler(function(){loadDash();}).withFailureHandler(function(e){alert('Delete failed: '+(e.message||e));})[fn]({id:id});
+}
+
+function initPad(id){
+  var c=document.getElementById(id);if(!c)return;
+  var ctx=c.getContext('2d'),drawing=false,lx=0,ly=0;
+  function resize(){var r=window.devicePixelRatio||1,cur=c.toDataURL('image/png');c.width=c.offsetWidth*r;c.height=c.offsetHeight*r;ctx.setTransform(1,0,0,1,0,0);ctx.scale(r,r);ctx.lineWidth=2;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#111';if(cur&&cur!=='data:,')drawPad(id,cur);}
+  function pt(e){var r=c.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}
+  c.style.touchAction='none';
+  c.addEventListener('pointerdown',function(e){drawing=true;var p=pt(e);lx=p.x;ly=p.y;});
+  c.addEventListener('pointermove',function(e){if(!drawing)return;e.preventDefault();var p=pt(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;});
+  c.addEventListener('pointerup',function(){drawing=false;});
+  c.addEventListener('pointerleave',function(){drawing=false;});
+  c.addEventListener('pointercancel',function(){drawing=false;});
+  resize();window.addEventListener('resize',resize);
+}
+function clearPad(id){var c=document.getElementById(id);if(c)c.getContext('2d').clearRect(0,0,c.width,c.height);}
+function drawPad(id,url){var c=document.getElementById(id);if(!c)return;var ctx=c.getContext('2d'),img=new Image();img.onload=function(){ctx.clearRect(0,0,c.width,c.height);ctx.drawImage(img,0,0,c.width/(window.devicePixelRatio||1),c.height/(window.devicePixelRatio||1));};img.src=url;}
+
+document.addEventListener('DOMContentLoaded',function(){
+  buildTbls();initPad('sigIni');initPad('sigFU');
+  var rb=document.querySelector('[name="sapRecommendation"]');
+  if(rb){rb.dataset.ue='false';rb.addEventListener('input',function(){rb.dataset.ue=rb.value.trim()?'true':'false';});}
+  syncRec();calcAll();buildRpt();
+  google.script.run
+    .withSuccessHandler(function(res){iniRecs=res.initial||[];fuRecs=res.followup||[];fillLinkSel();})
+    .withFailureHandler(function(){})
+    .getAllRecords();
+});
+</script>
+</body>
+</html>
